@@ -1,0 +1,16 @@
+{
+  "note": "Screening universe for screen.py — liquid ASX names across sectors where yfinance fundamentals are reliable. Small/micro-caps are deliberately excluded (patchy data); hunt those manually. Tickers get an .AX suffix at run time.",
+  "tickers": [
+    "CBA", "NAB", "WBC", "ANZ", "MQG", "QBE", "SUN", "ASX", "MFG", "PPT", "NWL", "HUB", "AMP",
+    "BHP", "RIO", "FMG", "S32", "MIN", "PLS", "IGO", "LYC", "SFR",
+    "NST", "EVN", "RRL", "GMD", "RMS", "PRU",
+    "WDS", "STO", "WHC", "NHC", "BPT",
+    "CSL", "RMD", "COH", "PME", "SHL", "RHC", "FPH", "TLX",
+    "TCL", "BXB", "QAN", "CPU", "SVW", "REH", "ALX",
+    "WOW", "COL", "WES", "JBH", "HVN", "EDV", "DMP", "TWE", "A2M", "ARB", "LOV",
+    "WTC", "XRO", "NXT", "TNE", "CDA", "DRO", "BRN", "WBT",
+    "TLS", "TPG", "ORG", "AGL", "APA",
+    "GMG", "SCG", "GPT", "SGP", "MGR", "VCX",
+    "GNC", "ELD", "NUF", "SHV", "RIC"
+  ]
+}

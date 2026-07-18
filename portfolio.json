@@ -1,0 +1,30 @@
+{
+  "pot": 20000,
+  "start_date": "2026-07-11",
+  "currency": "AUD",
+  "note": "Mock (paper) portfolio for a calibration experiment - no real money. Entry prices and watch-list refs are RE-BASELINED to yfinance closes on 2026-07-11; the original web-search-sourced prices were inconsistent for several names, so yfinance became the single source of truth and day zero = 0%. Tickers get an .AX suffix for yfinance (ASX). Shares are computed from alloc/entry at run time. Money P&L is a SECONDARY metric here - the primary output is calibration; see predictions.json and score.py.",
+  "integrity": {
+    "stale_sessions": 3,
+    "outlier_pct": 20.0,
+    "divergence_pct": 1.5,
+    "note": "Plausibility-gate thresholds for prices.py. stale_sessions: identical closes across this many sessions => 'stale'. outlier_pct: absolute 1-day move above this => 'outlier' (a FLAG, not a rejection; high-vol names can legitimately exceed it). divergence_pct: yfinance vs EODHD difference above this => 'divergence'."
+  },
+  "benchmark": { "ticker": "VAS", "name": "Vanguard ASX300 ETF", "entry": 109.10 },
+  "holdings": [
+    { "ticker": "BHP", "name": "BHP Group",       "tier": "blue-chip (resources)",  "entry": 58.28,  "alloc": 5000 },
+    { "ticker": "CSL", "name": "CSL Ltd",          "tier": "blue-chip (healthcare)", "entry": 122.89, "alloc": 5000 },
+    { "ticker": "QBE", "name": "QBE Insurance",    "tier": "financial (quality+momentum)", "entry": 25.47, "alloc": 4000 },
+    { "ticker": "VSL", "name": "Vulcan Steel",     "tier": "mid-cap cyclical",       "entry": 4.70,   "alloc": 3500 },
+    { "ticker": "DRO", "name": "DroneShield",      "tier": "speculative",            "entry": 2.29,   "alloc": 2500 }
+  ],
+  "watchlist": [
+    { "ticker": "GNC", "name": "GrainCorp",      "ref": 4.86,  "call": "down", "logged": "2026-07-11", "method": "seasonal",  "thesis": "El Nino drought breaks the seasonal ag rally" },
+    { "ticker": "NST", "name": "Northern Star",  "ref": 20.48, "call": "up",   "logged": "2026-07-11", "method": "theme",     "thesis": "Gold-miner momentum on Middle East risk-off" },
+    { "ticker": "WBT", "name": "Weebit Nano",    "ref": 7.83,  "call": "up",   "logged": "2026-07-11", "method": "theme",     "thesis": "AI 'Memflation' memory breakthrough (spicy)" },
+    { "ticker": "NXT", "name": "NextDC",         "ref": 13.94, "call": "up",   "logged": "2026-07-11", "method": "theme",     "thesis": "AI data-centre infra demand (quality)" },
+    { "ticker": "PWR", "name": "Peter Warren Auto", "ref": 0.985, "call": "up", "logged": "2026-07-11", "method": "insider",   "thesis": "Founder bought ~$5.7M of own stock after a profit warning; mean-reversion (spicy)" },
+    { "ticker": "SRG", "name": "SRG Global",     "ref": 3.58,  "call": "up",   "logged": "2026-07-11", "method": "reporting", "thesis": "Pre-upgraded FY26 guidance twice; reports ~20 Aug (catalyst just after month-end)" },
+    { "ticker": "VCX", "name": "Vicinity Centres", "ref": 2.64, "call": "up",  "logged": "2026-07-11", "method": "screener",  "thesis": "Top blended score in the multi-factor ASX screen (quality+value, near 52wk high)" },
+    { "ticker": "NWL", "name": "Netwealth (DROPPED)", "ref": 23.86, "call": "down", "logged": "2026-07-12", "method": "swap-control", "thesis": "Swapped OUT of book for QBE. Swap was right if NWL underperforms QBE (and VAS); wrong/impulsive if NWL beats QBE." }
+  ]
+}

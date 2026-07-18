@@ -1,0 +1,14 @@
+# Secrets — never commit. API keys come from environment variables.
+.secrets.json
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Local scratch
+*.local.json

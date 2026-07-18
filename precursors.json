@@ -1,0 +1,44 @@
+{
+  "note": "PRE-COMMITTED precursor rule-set. Rules are authored BEFORE screening, never to fit today's matches - that discipline is the entire value of this file. screen.py --precursors applies the quant_condition to produce a shortlist; the news_condition is then confirmed by a targeted sweep. Register the WHOLE match cohort in predictions.json, including unpromising matches - the non-movers are the control group. A precursor is only called 'holds up' on out-of-sample matches. See paper-trading-event-studies.md.",
+  "precursors": [
+    {
+      "id": "governance-overhang-suppresses-good-news",
+      "status": "candidate",
+      "registered": "2026-07-18",
+      "hypothesis": "A stock carrying an unresolved regulatory or governance overhang underreacts to bullish sector news, and still underperforms VAS over the reaction window.",
+      "quant_condition": "6-month return negative AND 52-week range position below 40",
+      "news_condition": "an unresolved regulatory/governance matter disclosed in the last ~6 months (investigation, probe, restatement, board/executive conduct issue) AND identifiable bullish sector news in the last ~14 days",
+      "reaction_window_days": 30,
+      "default_prob": 0.55,
+      "cluster": "governance",
+      "derived_from": "dro-governance-overhang-2026-07-18",
+      "notes": "The SHORT-WINDOW rule (30d), chosen deliberately so at least one precursor-derived prediction resolves before the ~2026-08-26 wrap rather than the track reporting as empty scaffolding. 30 days is honest here rather than convenient: the hypothesis is about the market's REACTION to a discrete news event, which is a fast process by construction - unlike the slower structural rules below. Inspired by the DRO event study, which has NOT passed a backward control test; this is the forward (Path B) test, where the non-movers in the cohort are the control."
+    },
+    {
+      "id": "insider-buy-after-warning",
+      "status": "candidate",
+      "registered": "2026-07-18",
+      "hypothesis": "On-market director buying within ~30d after a profit warning precedes outperformance vs VAS over the reaction window.",
+      "quant_condition": "52-week range position below 15 (i.e. near the 52-week low)",
+      "news_condition": "a profit warning or guidance downgrade in the last ~45d AND an on-market Appendix 3Y director purchase since that warning",
+      "reaction_window_days": 60,
+      "default_prob": 0.55,
+      "cluster": "insider",
+      "derived_from": null,
+      "notes": "Quant leg is screenable from yfinance; the news leg needs a targeted sweep on the shortlist. 60d because the thesis is mean-reversion after a de-rating, which is structural and slow - shortening it to beat the wrap date would misstate the hypothesis. Expect this to resolve in September, after the calibration wrap."
+    },
+    {
+      "id": "preupgraded-guidance-into-result",
+      "status": "candidate",
+      "registered": "2026-07-18",
+      "hypothesis": "A company that has upgraded guidance more than once ahead of a scheduled result beats VAS through that result.",
+      "quant_condition": "52-week range position above 60 AND positive 6-month return",
+      "news_condition": "two or more guidance upgrades in the last ~9 months AND a scheduled results date within the reaction window",
+      "reaction_window_days": 45,
+      "default_prob": 0.55,
+      "cluster": "reporting",
+      "derived_from": null,
+      "notes": "The obvious efficient-market objection applies with full force: repeated public upgrades are exactly the sort of thing that is already priced. Registered anyway BECAUSE it is the quant-screenable archetype - if the pre-committed expectation is right, this one should show nothing, and a null result here is a useful contrast against the news-synthesis rules."
+    }
+  ]
+}
