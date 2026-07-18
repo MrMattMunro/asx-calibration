@@ -18,19 +18,48 @@ Written down on 2026-07-18, before any prediction resolved, so it cannot be rati
 
 ## Results
 
-*(Nothing has resolved yet. The first directional prediction to resolve is `2026-07-29-nst-underperform`
-at the Northern Star quarterly on 29 July 2026.)*
+**One prediction has resolved.** The first directional one is `2026-07-18-nst-underperform` at the
+Northern Star quarterly on 29 July 2026.
 
 | Track | n | Brier | vs 0.25 baseline | Verdict |
 | ----- | - | ----- | ---------------- | ------- |
-| Directional | — | — | — | pending |
-| Factual | — | — | — | pending |
+| Directional | 0 | — | — | pending (12 live) |
+| Factual | 1 | 0.0100 | n/a | **n=1 — no verdict possible** |
 
 Run `python score.py` for the live numbers.
 
+### Resolved: `dro-asic-live` (P 0.90 → TRUE)
+
+Claim: *an ASIC investigation into DroneShield is on foot and unresolved as at 2026-07-18.*
+Resolved against the primary ASX announcement "Notice of ASIC Investigation" (12 May 2026), fetched
+and read directly — [source](https://announcements.asx.com.au/asxpdf/20260512/pdf/06zhn945gfstrq.pdf).
+
+**Three honesty notes, because a first result that flatters the system is exactly where scrutiny
+should be highest:**
+
+1. **The "unresolved" half rests on absence of disclosure, not an affirmative statement.** The complete
+   official ASX index for DRO through 10 July 2026 shows no closure announcement. For a listed company
+   a closure would very likely trigger continuous disclosure, so the silence is meaningful — but it is
+   an inference. No ASIC-side source exists; ASIC does not comment on live investigations.
+2. **The pre-registered rationale contains a factual error, left uncorrected.** It gives the disclosure
+   date as 11 May 2026; the primary source says 12 May. Pre-registered fields are append-only, so the
+   error stands on the record. It doesn't affect the claim, which concerned existence and status.
+3. **n=1 means nothing.** A single 0.90 resolving TRUE is exactly what a *badly* calibrated system
+   would also produce. This is one data point in the top band, not evidence of anything.
+
+**Method lesson:** this entry's resolution rule asked a source to "confirm … has not concluded," which
+is close to unsatisfiable affirmatively. Future factual rules should specify an achievable evidentiary
+standard — e.g. "no closure announcement on the official record as at DATE."
+
 ## Calibration table
 
-*(pending — needs resolved predictions)*
+| Prob band | Mean predicted | Actual frequency | n |
+|-----------|----------------|------------------|---|
+| 0.5–0.6 | — | — | 0 |
+| 0.6–0.7 | — | — | 0 |
+| 0.7–0.8 | — | — | 0 |
+| 0.8–0.9 | — | — | 0 |
+| 0.9–1.0 | 0.90 | 1.00 | 1 |
 
 ## Provenance
 

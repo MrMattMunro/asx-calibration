@@ -241,16 +241,17 @@
       "method": "governance",
       "cluster": "defence",
       "rationale": "Disclosed 11 May 2026 per the sweep. Near-certain by design - this entry exists to test factual over-confidence at the top of the range, where a 0.90 that should have been 0.75 would show up.",
-      "outcome": null,
-      "resolved_on": null,
-      "source": null,
+      "outcome": 1,
+      "resolved_on": "2026-07-18",
+      "source": "https://announcements.asx.com.au/asxpdf/20260512/pdf/06zhn945gfstrq.pdf",
       "provenance": {
         "model": "claude-opus-4-8[1m]",
         "surface": "claude-code-main",
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-18"
-      }
+      },
+      "resolution_note": "Resolved TRUE. (a) EXISTENCE: confirmed by direct read of the primary ASX announcement 'Notice of ASIC Investigation' (DroneShield Ltd, 12 May 2026, 10:41am AEST). Verbatim: 'DroneShield Ltd (ASX:DRO) ... advises that it has received a notice from ASIC requiring it to provide reasonable assistance in connection with an investigation under the Corporations Act ... regarding announcements and information provided to the Australian Securities Exchange between 1 and 20 November 2025, and trading in Droneshield shares between 6 and 12 November 2025 (inclusive).' (b) UNRESOLVED-AS-AT-LOGGING: established by ABSENCE OF DISCLOSURE, not by an affirmative statement. The complete official ASX announcement index for DRO across 2026 (through the most recent entry, 10 July 2026) contains exactly one 'ASIC' entry - the 12 May notice - with no closure, no-further-action or findings announcement since. For a listed company a closure would very likely trigger continuous disclosure, so the silence is meaningful, but it remains an inference. No ASIC-side primary source exists; ASIC does not comment on live investigations, so its silence is uninformative either way. ERROR IN THE PRE-REGISTERED RATIONALE, LEFT UNCORRECTED: the rationale states the disclosure date as 11 May 2026; the primary source shows 12 May 2026. The rationale is a pre-registered field and is append-only, so the error stands on the record. It does not affect the claim, which concerned existence and status, not the date. METHOD LESSON: this entry's resolution rule asked a source to 'confirm ... has not concluded', which is close to unsatisfiable affirmatively. Future factual rules should specify an achievable evidentiary standard (e.g. 'no closure announcement on the official record as at DATE')."
     },
     {
       "id": "2026-07-18-cba-underperform",
