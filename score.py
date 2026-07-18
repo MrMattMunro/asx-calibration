@@ -34,7 +34,7 @@ try:
 except Exception:
     pass
 
-from prices import Quote, describe_flags, get_price
+from prices import Quote, Rotator, describe_flags, get_price
 
 HERE = Path(__file__).resolve().parent
 LEDGER = HERE / "predictions.json"
@@ -119,7 +119,12 @@ def main() -> None:
 
     # --- Price fetches (one per distinct ticker, plus the benchmark) -------
     tickers = sorted({e["ticker"] for e in preds if e["type"] == "directional" and e.get("ticker")})
-    quotes: dict[str, Quote] = {tk: get_price(tk) for tk in tickers}
+
+    # EODHD's free tier is ~20 calls/day, so only a rotating few tickers are
+    # cross-checked each run; the cursor persists so every name gets covered over
+    # several check-ins. Without a key this is a no-op and the gates still run.
+    reconciled = Rotator(size=3).pick(tickers)
+    quotes: dict[str, Quote] = {tk: get_price(tk, reconcile=tk in reconciled) for tk in tickers}
     bm_q = get_price(bm_ticker)
 
     final_dir: list[tuple[float, int]] = []

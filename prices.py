@@ -161,12 +161,18 @@ def _eodhd_key() -> str | None:
 def get_price_eodhd(ticker: str) -> float | None:
     """Independent second source. Returns None (silently) if unavailable.
 
-    STATUS as at 2026-07-18: NOT ENABLED. No free key has been provisioned, so
-    the free-tier prerequisite test has not been run and it is still unconfirmed
-    whether plain EOD data for ASX (.AU) works on the free tier at all. Until
-    that test passes this always returns None and the layer runs on gates plus
-    the manual GOOGLEFINANCE tie-breaker - which is the intended fallback, not a
-    degraded mode. See paper-trading-log.md.
+    STATUS as at 2026-07-18: ENABLED - free-tier prerequisite test PASSED.
+    A free key returned real ASX end-of-day closes for BHP/CSL/VAS (.AU suffix),
+    matching yfinance to the cent for the 2026-07-17 close.
+
+    What that agreement does and does not prove: official ASX closing prices are
+    a single canonical number, so exact agreement is EXPECTED and is not evidence
+    that the two feeds share an upstream. What this reconcile actually buys is
+    detection of FEED BREAKAGE - if yfinance goes stale or returns garbage,
+    EODHD will not move with it. It cannot catch a bad upstream common to both.
+
+    Free tier is ~20 calls/day, so callers reconcile a rotating handful per run
+    (see Rotator) rather than the whole book.
     """
     key = _eodhd_key()
     if not key:

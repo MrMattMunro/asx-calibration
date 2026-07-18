@@ -150,11 +150,21 @@ missing/NaN/zero, stale-unchanged across N sessions, outlier single-day moves. *
 blocks grading** until a human adjudicates, with `=GOOGLEFINANCE("ASX:XXX","closeyest")` as the
 one-glance tie-breaker.
 
-> **EODHD second-source test — NOT RUN (2026-07-18).** The optional automated cross-check needs a free
-> API key, which has not been provisioned, so it remains unconfirmed whether plain EOD data for ASX
-> works on their free tier. **EODHD is therefore disabled.** The code path is written and
-> capability-flagged; enabling it later is a key in `EODHD_API_KEY`, not a code change. Until then the
-> layer runs on gates plus manual GOOGLEFINANCE — the intended fallback, not a degraded mode.
+> **EODHD second-source test — PASSED, and it is now ENABLED (2026-07-18).** A free-tier key returned
+> **real ASX end-of-day closes** for BHP, CSL and VAS (`.AU` suffix), matching yfinance to the cent on
+> the 2026-07-17 close. So the free tier is not US-demo-only, and the automated cross-check is live.
+>
+> **What that exact agreement does and doesn't prove.** Official ASX closing prices are a single
+> canonical number, so agreeing to the cent is *expected* — it is **not** evidence that the two feeds
+> are genuinely independent, and it would look identical if both re-wrapped the same upstream. What the
+> reconcile actually buys is **detection of feed breakage**: if yfinance goes stale or returns garbage,
+> EODHD won't move with it. It cannot catch a bad upstream common to both. That is a real but bounded
+> guarantee, and it is the one the gates were designed around anyway.
+>
+> **How it runs:** the free tier is ~20 calls/day, so `score.py` reconciles a **rotating 3 tickers per
+> run** via a persisted cursor — every name gets covered over several check-ins. A yfinance-vs-EODHD
+> gap above 1.5% raises a `divergence` flag, which (like any flag) **blocks grading** until adjudicated.
+> The key lives in the `EODHD_API_KEY` environment variable and is never committed.
 
 ### Seed predictions — pre-registered 2026-07-18
 

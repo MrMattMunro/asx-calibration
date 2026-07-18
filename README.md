@@ -99,8 +99,12 @@ Vantage is unreliable for ASX at 25 req/day, and every ASX-capable finance MCP j
 - **yfinance stays primary.**
 - **Plausibility gates** (`prices.py`) catch the failure modes that actually mis-grade — missing/NaN/zero,
   stale-unchanged across N sessions, outlier single-day move. No new dependency needed.
-- **EODHD** is an optional automated second source behind `EODHD_API_KEY`, reconciling a rotating few
-  tickers per run to stay inside a free tier. Absent a key it is silently skipped; gates still run.
+- **EODHD** is an automated second source behind `EODHD_API_KEY` — **tested and enabled 2026-07-18**
+  (its free tier does return real ASX closes, not US-demo-only). `score.py` reconciles a **rotating 3
+  tickers per run** via a persisted cursor to stay inside the ~20 calls/day free tier; a gap above 1.5%
+  raises a `divergence` flag. Absent a key it is silently skipped and the gates still run.
+  *Scope note:* it agrees with yfinance to the cent, which is expected for canonical ASX closes and is
+  **not** proof of independence. It catches **feed breakage**, not a bad upstream common to both.
 - **`=GOOGLEFINANCE("ASX:BHP","closeyest")`** is the zero-cost manual tie-breaker when a gate trips.
 
 **A tripped, unadjudicated flag blocks grading.** `score.py` lists the prediction under
