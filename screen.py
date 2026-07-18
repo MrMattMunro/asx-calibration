@@ -114,15 +114,17 @@ def num(x, fmt="{:.1f}"):
 # matched against everything — it is reported as sweep-only, so the gap is visible.
 
 def _p_governance(r: dict) -> bool:
-    # Tightened 2026-07-18 (was: ret6m < 0 and rng_pos < 40, which matched 37/82
-    # names and made the follow-up news sweep untargeted). The quant leg is an
-    # operational narrowing device only - governance overhang is invisible in
-    # price data, so the news_condition carries this rule's actual signal.
+    # Deliberately UNCHANGED since registration. A same-day tightening was
+    # reverted because it had been made after seeing the match list. Shortlist
+    # size is handled by screen_budget instead - a rule is pre-committed, a
+    # research budget is just logistics, and conflating them is how a rule
+    # quietly gets tuned. The quant leg is an operational narrowing device only;
+    # governance overhang is invisible in price data.
     return (
         isinstance(r.get("ret6m"), (int, float))
-        and r["ret6m"] < -15
+        and r["ret6m"] < 0
         and isinstance(r.get("rng_pos"), (int, float))
-        and r["rng_pos"] < 25
+        and r["rng_pos"] < 40
     )
 
 
@@ -200,7 +202,41 @@ def run_precursors(rows: list[dict]) -> None:
             print("\n**No current matches.** (A zero-match run is a result — log it.)")
             continue
 
-        print(f"\n**{len(shortlist)} quant match(es)** — each is a CANDIDATE until the news leg is confirmed:\n")
+        # Apply the operational research budget, if the rule declares one. This
+        # is NOT part of the hypothesis - it caps how many names get swept, using
+        # a stated ordering applied blind to outcomes. Dropped names are always
+        # reported, never silently discarded.
+        budget = rule.get("screen_budget") or {}
+        dropped: list[dict] = []
+        matched_total = len(shortlist)
+        if budget.get("max_names") and matched_total > budget["max_names"]:
+            rank_by = budget.get("rank_by", "ret6m_ascending")
+            if rank_by == "ret6m_ascending":
+                ordered = sorted(
+                    shortlist,
+                    key=lambda r: r["ret6m"] if isinstance(r.get("ret6m"), (int, float)) else 0.0,
+                )
+            else:
+                print(f"\n⚠️ Unknown screen_budget.rank_by `{rank_by}` — budget NOT applied.")
+                ordered = shortlist
+            if ordered is not shortlist:
+                shortlist, dropped = ordered[: budget["max_names"]], ordered[budget["max_names"]:]
+
+        if dropped:
+            print(
+                f"\n**Research budget applied:** {matched_total} names matched the quant condition; "
+                f"the top **{len(shortlist)}** by `{budget.get('rank_by')}` are swept and registered "
+                f"as the cohort. This is an operational cap, not part of the hypothesis — it is "
+                f"applied blind to outcomes."
+            )
+            print(
+                f"\n<details><summary>{len(dropped)} name(s) dropped by budget — NOT swept, NOT "
+                f"registered</summary>\n\n"
+                + ", ".join(f"`{r['ticker']}`" for r in dropped)
+                + "\n\n</details>"
+            )
+
+        print(f"\n**{len(shortlist)} name(s) in cohort** — each is a CANDIDATE until the news leg is confirmed:\n")
         print("| Ticker | Price | 6mo % | 52wk pos | News leg confirmed? |")
         print("|--------|-------|-------|----------|---------------------|")
         for r in sorted(shortlist, key=lambda r: r["ticker"]):
