@@ -114,11 +114,15 @@ def num(x, fmt="{:.1f}"):
 # matched against everything — it is reported as sweep-only, so the gap is visible.
 
 def _p_governance(r: dict) -> bool:
+    # Tightened 2026-07-18 (was: ret6m < 0 and rng_pos < 40, which matched 37/82
+    # names and made the follow-up news sweep untargeted). The quant leg is an
+    # operational narrowing device only - governance overhang is invisible in
+    # price data, so the news_condition carries this rule's actual signal.
     return (
         isinstance(r.get("ret6m"), (int, float))
-        and r["ret6m"] < 0
+        and r["ret6m"] < -15
         and isinstance(r.get("rng_pos"), (int, float))
-        and r["rng_pos"] < 40
+        and r["rng_pos"] < 25
     )
 
 
