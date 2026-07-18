@@ -126,6 +126,7 @@ Vantage is unreliable for ASX at 25 req/day, and every ASX-capable finance MCP j
 | `universe.json` | ~83 liquid ASX names the screener ranks. |
 | `paper-trading-log.md` | The narrative log — every check-in, in the open. |
 | `paper-trading-event-studies.md` | Precursor / event-study protocol + worked examples. |
+| `CHECKIN.md` | The repeatable check-in runbook. The step order is what keeps pre-registration honest. |
 | `FINDINGS.md` | The evolving honest findings report. Null results included. |
 
 ## Running it
