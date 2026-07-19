@@ -125,7 +125,10 @@ def main() -> None:
     # several check-ins. Without a key this is a no-op and the gates still run.
     reconciled = Rotator(size=3).pick(tickers)
     quotes: dict[str, Quote] = {tk: get_price(tk, reconcile=tk in reconciled) for tk in tickers}
-    bm_q = get_price(bm_ticker)
+    # The benchmark can now also be a directional SUBJECT (absolute-basis index
+    # calls), in which case it is already in `quotes` — reuse it rather than
+    # spending a second fetch, and a second EODHD reconcile call, on it.
+    bm_q = quotes.get(bm_ticker) or get_price(bm_ticker)
 
     final_dir: list[tuple[float, int]] = []
     final_dir_entries: list[dict] = []
