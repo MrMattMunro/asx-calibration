@@ -1,5 +1,5 @@
 {
-  "schema_note": "APPEND-ONLY pre-registered prediction ledger. Entries are NEVER edited after logging - only resolved (outcome, resolved_on, source). 'prob' is always P(claim is TRUE), so 0.5 = no idea. Directional entries must carry a non-null ref_price AND bm_ref, both stamped from the SAME price fetch at logging time and then locked; score.py refuses to grade any directional entry missing either. 'cluster' groups correlated predictions so score.py can report effective n rather than raw count. 'provenance' records which model and surface produced the entry - for attribution and reproducibility only, NOT as a model comparison (per-cell n is far too small).",
+  "schema_note": "APPEND-ONLY pre-registered prediction ledger. Entries are NEVER edited after logging - only resolved (outcome, resolved_on, source). 'prob' is always P(claim is TRUE), so 0.5 = no idea. Directional entries must carry a non-null ref_price AND bm_ref, both stamped from the SAME price fetch at logging time and then locked; score.py refuses to grade any directional entry missing either. EXCEPTION: entries with 'basis':'absolute' are graded against their own 'threshold_pct' instead of a benchmark leg, and carry a null bm_ref - used where the subject IS the benchmark (an index-level call), since comparing the benchmark to itself would make the relative test False by construction. 'cluster' groups correlated predictions so score.py can report effective n rather than raw count. 'provenance' records which model and surface produced the entry - for attribution and reproducibility only, NOT as a model comparison (per-cell n is far too small).",
   "benchmark_ticker": "VAS",
   "predictions": [
     {
@@ -402,6 +402,87 @@
         "web_search": true,
         "generated_by": "new-industry-batch-2026-07-18"
       }
+    },
+    {
+      "logged": "2026-07-19",
+      "type": "directional",
+      "ticker": "VAS",
+      "basis": "absolute",
+      "ref_price": 108.92,
+      "bm_ref": null,
+      "method": "base-rate",
+      "cluster": "market-beta",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-4-8[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "index-level-batch-2026-07-19"
+      },
+      "id": "2026-07-19-vas-positive-to-wrap",
+      "claim": "VAS price-return is positive between 2026-07-19 and 2026-08-26",
+      "prob": 0.58,
+      "threshold_pct": 0.0,
+      "resolve_date": "2026-08-26",
+      "resolution": "price: VAS.AX price-return > 0.0% over [logged, resolve_date]. Absolute basis - no benchmark leg.",
+      "rationale": "Base rate is the anchor: ASX200 price return over ~27 trading days was positive 61.1% of the time (n=6,428, self-computed 2001-2026). Shaded DOWN only slightly, to 0.58, for identifiable in-window risk: RBA is in a tightening cycle (4.35%, three 2026 hikes, hold in June), the 11 Aug meeting falls inside the window with economist views split, the 29 Jul CPI print is the cited swing factor, iron ore is soft (~US$98.9/t) and the index is -1.28% over the past month. The deviation from base rate is deliberately small because all of that is public and therefore priced - a large adjustment here would be exactly the overconfidence this experiment is built to detect. Caveat: base rates are computed on ^AXJO (ASX200); VAS tracks the ASX300. No VAS ex-distribution date falls in the window (they are 1 Jan/Apr/Jul/Oct; 1 Jul has passed, next is 1 Oct), so price return carries no dividend drag."
+    },
+    {
+      "logged": "2026-07-19",
+      "type": "directional",
+      "ticker": "VAS",
+      "basis": "absolute",
+      "ref_price": 108.92,
+      "bm_ref": null,
+      "method": "base-rate",
+      "cluster": "market-beta",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-4-8[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "index-level-batch-2026-07-19"
+      },
+      "id": "2026-07-19-vas-positive-to-30jul",
+      "claim": "VAS price-return is positive between 2026-07-19 and 2026-07-30",
+      "prob": 0.54,
+      "threshold_pct": 0.0,
+      "resolve_date": "2026-07-30",
+      "resolution": "price: VAS.AX price-return > 0.0% over [logged, resolve_date]. Absolute basis - no benchmark leg.",
+      "rationale": "Short-horizon companion, chosen to compound sample faster and to straddle a single identified event. Base rate over ~8 trading days is 56.9% positive (n=6,447). Shaded to 0.54 because the 29 Jul quarterly CPI print falls inside this window and is the cited swing factor for the 11 Aug RBA decision, so event risk is concentrated rather than diffuse. Same ^AXJO-vs-ASX300 caveat as the wrap entry."
+    },
+    {
+      "logged": "2026-07-19",
+      "type": "directional",
+      "ticker": "VAS",
+      "basis": "absolute",
+      "ref_price": 108.92,
+      "bm_ref": null,
+      "method": "base-rate",
+      "cluster": "market-beta",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-4-8[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "index-level-batch-2026-07-19"
+      },
+      "id": "2026-07-19-vas-no-5pct-drawdown",
+      "claim": "VAS price-return is better than -5% between 2026-07-19 and 2026-08-26",
+      "prob": 0.88,
+      "threshold_pct": -5.0,
+      "resolve_date": "2026-08-26",
+      "resolution": "price: VAS.AX price-return > -5.0% over [logged, resolve_date]. Absolute basis - no benchmark leg.",
+      "rationale": "Deliberately placed in the upper calibration band, which the ledger is thin in and which directional stock calls can never populate (they honestly sit near 0.5). Base rate: ASX200 27-day price return exceeded -5% on 90.0% of observations (n=6,428); 5th percentile is -7.23%. Shaded slightly DOWN to 0.88 rather than up, for the concentrated in-window event risk (29 Jul CPI, 11 Aug RBA in a live tightening cycle, August reporting season peak). Note this is a tail-risk claim, so a single resolution carries little information - it is here to test whether a stated 0.88 means 0.88."
     }
   ]
 }

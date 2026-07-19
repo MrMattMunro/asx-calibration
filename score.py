@@ -141,8 +141,17 @@ def main() -> None:
             final_dir_entries.append(e)
             continue
 
-        # Pre-registration completeness is a hard gate.
-        if e.get("ref_price") in (None, 0) or e.get("bm_ref") in (None, 0):
+        # Pre-registration completeness is a hard gate. Absolute-basis entries
+        # (the subject IS the benchmark, so a relative comparison is degenerate)
+        # need ref_price and threshold_pct instead of bm_ref.
+        absolute = e.get("basis") == "absolute"
+        if absolute:
+            if e.get("ref_price") in (None, 0) or e.get("threshold_pct") is None:
+                held.append(
+                    (e, "incomplete pre-registration (missing ref_price or threshold_pct)")
+                )
+                continue
+        elif e.get("ref_price") in (None, 0) or e.get("bm_ref") in (None, 0):
             held.append((e, "incomplete pre-registration (missing ref_price or bm_ref)"))
             continue
 
@@ -153,13 +162,21 @@ def main() -> None:
         if q.flags:
             held.append((e, f"integrity flag: {q.flag_str()}"))
             continue
-        if bm_q.price is None or bm_q.flags:
+        if not absolute and (bm_q.price is None or bm_q.flags):
             held.append((e, f"benchmark price unusable ({bm_q.flag_str()})"))
             continue
 
         ret = (q.price / e["ref_price"] - 1) * 100
-        bm_ret = (bm_q.price / e["bm_ref"] - 1) * 100
-        beat = ret > bm_ret
+        if absolute:
+            # No benchmark leg: the claim is about the subject's own return
+            # clearing a pre-registered threshold. Comparing the benchmark to
+            # itself would make `beat` False by construction and silently
+            # mis-grade every entry, so that path is never taken here.
+            bm_ret = e["threshold_pct"]
+            beat = ret > bm_ret
+        else:
+            bm_ret = (bm_q.price / e["bm_ref"] - 1) * 100
+            beat = ret > bm_ret
         truth = beat if claim_is_beat(e) else (not beat)
 
         if now >= parse_date(e["resolve_date"]):
@@ -260,12 +277,13 @@ def main() -> None:
     if not provisional:
         out.append("_None live._")
     else:
-        out.append("| ID | Claim | P | Move | VAS | On track? | Resolves |")
-        out.append("|----|-------|---|------|-----|-----------|----------|")
+        out.append("| ID | Claim | P | Move | Bar (VAS or threshold) | On track? | Resolves |")
+        out.append("|----|-------|---|------|------------------------|-----------|----------|")
         for e, ret, bm_ret, truth in provisional:
+            bar = f"{fmt_pct(bm_ret)} (abs)" if e.get("basis") == "absolute" else fmt_pct(bm_ret)
             out.append(
                 f"| `{e['id']}` | {e['claim'][:52]}… | {e['prob']:.2f} | {fmt_pct(ret)} | "
-                f"{fmt_pct(bm_ret)} | {'yes' if truth else 'no'} | {e['resolve_date']} |"
+                f"{bar} | {'yes' if truth else 'no'} | {e['resolve_date']} |"
             )
     out.append("")
 

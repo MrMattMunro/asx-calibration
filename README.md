@@ -28,6 +28,8 @@ resolution rule *before* the outcome is known works for any high-stakes call, no
 | Track | Resolves against | Expectation |
 | ----- | ---------------- | ----------- |
 | **Directional** | Price. `score.py` computes the outcome from yfinance — no human judgement. | Little or no skill. Public news is priced in. Brier ≈ 0.25. |
+| ↳ *relative* (default) | The subject's price return vs the benchmark's, both legs stamped at logging time. | Strips out market direction — tests stock selection, not beta. |
+| ↳ *absolute* (`basis: "absolute"`) | The subject's own return vs a pre-registered `threshold_pct`; `bm_ref` is null. | Used where the subject **is** the benchmark. Anchored to a computed base rate, so a large deviation from it is itself the signal worth catching. |
 | **Factual** | A citable primary source, URL recorded at resolution. | Reliable, but watch for over-confidence — a 0.90 that should have been 0.75. |
 
 Splitting them is the whole point: it exposes *where* reliability lives (probably the research)
