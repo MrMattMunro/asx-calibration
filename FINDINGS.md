@@ -18,13 +18,15 @@ Written down on 2026-07-18, before any prediction resolved, so it cannot be rati
 
 ## Results
 
-**One prediction has resolved.** The first directional one is `2026-07-18-nst-underperform` at the
-Northern Star quarterly on 29 July 2026.
+**One prediction has resolved.** As at check-in 2 (2026-07-26) the ledger holds **24 predictions** — 1
+resolved, 23 live. The first cluster comes due imminently: three directional entries and two factual
+reporting-date calls resolve **29–30 July 2026** (the NST quarterly, the RIO half-year, the FOMC
+decision, and the two short-horizon VAS index calls).
 
 | Track | n | Brier | vs 0.25 baseline | Verdict |
 | ----- | - | ----- | ---------------- | ------- |
-| Directional | 0 | — | — | pending (12 live) |
-| Factual | 1 | 0.0100 | n/a | **n=1 — no verdict possible** |
+| Directional | 0 | — | — | pending (15 live) |
+| Factual | 1 | 0.0100 | n/a | **n=1 — no verdict possible** (8 live) |
 
 Run `python score.py` for the live numbers.
 

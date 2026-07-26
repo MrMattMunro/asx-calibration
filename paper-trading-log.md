@@ -325,6 +325,63 @@ Biggest single in-window event = **FOMC 28–29 Jul** (sets USD, gold, AI-trade 
 reporting dates are single-secondary-sourced — reconfirm against each company's IR page before
 grading. Live quotes remain ground truth over any price in search snippets.
 
+### 2026-07-26 — Check-in 2 (week 2)
+
+**Money book (secondary metric):**
+
+| Ticker | Entry | Current | Value | P&L $ | P&L % |
+|--------|-------|---------|-------|-------|-------|
+| BHP | $58.28 | $58.85 | $5,048.90 | $48.90 | +1.0% |
+| CSL | $122.89 | $114.22 | $4,647.25 | $-352.75 | -7.1% |
+| QBE | $25.47 | $24.85 | $3,902.63 | $-97.37 | -2.4% |
+| VSL | $4.70 | $5.27 | $3,924.47 | $424.47 | +12.1% |
+| DRO | $2.29 | $2.04 | $2,227.07 | $-272.93 | -10.9% |
+
+- **Book:** $19,750.32 (−1.2%) vs **benchmark** all-VAS $19,891.84 (−0.5%) → picks **lagging** by 0.7 pts.
+- Movers: VSL still carrying the book (+12%); CSL (−7%) and DRO (−11%) the drags. Exactly the "no
+  stock-picking edge" result the design predicts — money is the engagement metric, not the point.
+
+**Calibration state:** 1 resolved (`dro-asic-live`, factual, Brier 0.0100, n=1 — means nothing).
+15 directional + 8 factual live. Calibration table still empty except the one 0.9–1.0 cell.
+**Nothing was due to resolve today** — the first cluster (NST quarterly, RIO H1, FOMC, the two
+short-horizon VAS calls) comes due **29–30 Jul**. So `score.py --resolve` was a no-op, correctly.
+
+**Research sweep (4 parallel Sonnet subagents): primary-sourced findings**
+
+- **FOMC 29 Jul** — meeting date confirmed (federalreserve.gov). Current range **3.50–3.75%**, held
+  since 17 Jun (Fed press release). A cut is priced ~0%; the live debate is **hold vs 25bp hike**,
+  hike odds up ~12%→~38% by 24 Jul (CBS citing CME FedWatch) on an oil>US$100 reinflation narrative.
+- **NST June-Q report 29 Jul** — CONFIRMED, NST's own 2 Jul ASX Production Update.
+- **RIO H1 results 29 Jul** — CONFIRMED, RIO IR results page + SEC 6-K + RNS. (A snippet conflating
+  13 Aug — the interim-dividend ex-date — with the results date was rejected.)
+- **IAG FY26 results 13 Aug** — CONFIRMED, IAG's lodged "2026 Calendar of Key Dates" ASX PDF.
+- **BHP FY26 results ~18 Aug** — UNVERIFIED (bhp.com bot-blocked). Secondary sources split 18 Aug
+  (Motley Fool AU, matches BHP's Tuesday pattern) vs 17 Aug (aggregators, off-pattern).
+- **Disconfirming sweep on live theses:** CSL regulatory risk **unchanged** — EU EC still hasn't ruled
+  on TAVNEOS, thesis stands into 18 Aug. DRO got a **mild disconfirm** — Fidelity/FMR raised its stake
+  to 9.93% on 20 Jul (buying into the risk window), though short interest reportedly also at highs;
+  consistent with the near-coin-flip framing, no change. Gold choppy (dipped <$4,000 then bounced) →
+  NST reversal thesis inconclusive pending the 29 Jul quarterly. **No live prediction changed.**
+
+**Pre-registered this check-in (5 factual, before any outcome known) — spread 0.62–0.95:**
+
+| ID | Claim | P | Resolves | Basis |
+|----|-------|---|----------|-------|
+| `fomc-holds-29jul` | FOMC holds at 3.50–3.75% on 29 Jul | 0.62 | 30 Jul | market-implied hold; genuinely two-sided |
+| `bhp-reports-18aug` | BHP FY26 results on 18 Aug | 0.68 | 18 Aug | date unverified (17 vs 18); honest mid-band |
+| `iag-reports-13aug` | IAG FY26 results on 13 Aug | 0.90 | 13 Aug | confirmed primary; "subject to change" caveat |
+| `rio-reports-29jul` | RIO H1 results on 29 Jul | 0.93 | 29 Jul | confirmed primary |
+| `nst-reports-29jul` | NST June-Q report on 29 Jul | 0.95 | 29 Jul | confirmed primary |
+
+Two genuinely-uncertain calls (FOMC 0.62, BHP 0.68) plus three confirmed reporting dates placed to
+populate the thin 0.9+ band — which directional stock calls can never reach. Provenance:
+`claude-opus-4-8[1m]` / `claude-code-main`, web_search true.
+
+**Precursor screen:** run (`screen.py --precursors`) — the `governance-overhang` rule matched 36
+names, budget-capped to the 15 most beaten-down (246 precursor×name tests this run). **Cohort NOT
+registered this check-in** — it resolves ~9 Sep (after the wrap) and honest registration needs a
+news-condition sweep per name; deferred as a decision rather than pasting unconfirmed stubs.
+
 <!-- Template for future entries:
 ### YYYY-MM-DD — Check-in N
 | Ticker | Entry | Current | Value | P&L $ | P&L % |
