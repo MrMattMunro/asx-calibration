@@ -608,6 +608,32 @@
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
       }
+    },
+    {
+      "id": "2026-07-26-csl-insider-buy-after-warning",
+      "logged": "2026-07-26",
+      "type": "directional",
+      "ticker": "CSL",
+      "claim": "CSL beats VAS on price return between 2026-07-26 and 2026-09-24",
+      "prob": 0.55,
+      "resolution": "price: CSL.AX price-return > VAS.AX price-return over [logged, resolve_date]",
+      "resolve_date": "2026-09-24",
+      "ref_price": 114.22,
+      "bm_ref": 108.51,
+      "method": "precursor",
+      "cluster": "csl",
+      "rationale": "Precursor cohort match for the pre-committed 'insider-buy-after-warning' rule (hypothesis: a director's on-market purchase following a profit warning signals a bottom, so the stock OUTPERFORMS - direction flipped from the stub's default 'underperforms' to match the hypothesis). Both news legs confirmed against primary CSL documents: (a) guidance cut / ~US$5bn pre-tax impairments in the 11 May 2026 'Interim CEO 90-Day Review and Financial Update'; (b) director/interim-CEO Gordon Naylor's on-market Appendix 3Y purchase of 1,100 shares on 26 May 2026. This was the ONLY confirmed match among 51 quant candidates across all three precursor rules this run - the other 14 governance-overhang and 20 preupgraded-guidance/insider candidates all failed their news conditions - so there is effectively no cohort and no control group this run, just this single seed. P 0.55 is a deliberately mild edge: the pattern is under test, not asserted. CORRELATION FLAG for effective-n: this overlaps the live directional call 2026-07-18-csl-beats-vas (same name, same 'beats VAS' direction, overlapping window) - the two are not independent and should be discounted together at the wrap despite the append-only cluster tags not linking them. Resolves 2026-09-24, after the ~26 Aug wrap, by design (the event-study track continues past the wrap).",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "derived_from": "insider-buy-after-warning",
+      "provenance": {
+        "model": "claude-opus-4-8[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "precursor-screen-2026-07-26"
+      }
     }
   ]
 }

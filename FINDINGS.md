@@ -53,6 +53,17 @@ should be highest:**
 is close to unsatisfiable affirmatively. Future factual rules should specify an achievable evidentiary
 standard — e.g. "no closure announcement on the official record as at DATE."
 
+## Precursor / event-study track
+
+Seeded, grading continues past the wrap by design (most precursor rules resolve in September).
+
+- **Check-in 2 (2026-07-26):** all three rules screened; 51 quant candidates → **1 confirmed** on the
+  news condition (`csl-insider-buy-after-warning`, registered, resolves 24 Sep). `governance-overhang`
+  and `preupgraded-guidance-into-result` produced **0 confirmed matches** — a real, reported outcome,
+  not a failed run. The ~2% confirmation rate is the intended effect of a demanding, pre-committed news
+  condition. With a single confirmed name there is no cohort and no control group this run. **51
+  name×rule comparisons** this run (kept visible per the multiple-comparisons discipline).
+
 ## Calibration table
 
 | Prob band | Mean predicted | Actual frequency | n |
@@ -80,4 +91,5 @@ made at this wrap**, whatever the numbers look like — see the README section o
 | 2026-07-19 | **Correction to the base rates cited above — the sample sizes were overstated.** The n≈6,430 figures come from *overlapping* rolling windows and are not independent observations; the true independent count is ~239 at the 27-day horizon and ~806 at 8 days. Recomputed on **non-overlapping** windows: 27-day positive **64.9%** (SE 3.1pp, 95% CI 59–71%), 8-day positive **55.3%** (SE 1.8pp), better-than-−5% **90.0%** (SE 1.9pp) — the last identical to the overlapping estimate. | Point estimates held up (the −5% figure to three decimals), so the anchors are sound, but the *precision* was illusory. This matters for interpretation: the 27-day base rate is only known to about ±6pp, so the 2–3pp shading applied for macro headwinds is **well inside the noise band and is not a measurable adjustment**. It also means `vas-positive-to-wrap` (P 0.58) sits ~7pp below the better central estimate of 64.9%, not the ~3pp intended. **The pre-registered `prob` and `rationale` stand uncorrected — they are append-only.** This note is the correction, and the entry should be read at wrap as a call that was more bearish than its own stated reasoning justified. |
 | 2026-07-19 | Verified the `--resolve` write path on absolute-basis entries before any is due (forced past-due on a scratch copy). Outcomes wrote back correctly against `threshold_pct`. | The write path had never been exercised for the new basis. Discovering it broken on 30 July, when the first entry is actually due, would have meant debugging a grader while an outcome was already known — the worst possible time. Noted: the rule is a strict `>`, so an exactly-flat return resolves FALSE. |
 | 2026-07-19 | Verified no VAS ex-distribution date falls inside the prediction window. | VAS distributes quarterly (1 Jan/Apr/Jul/Oct). An ex-date inside a window mechanically drops the price and would bias *both* the new absolute entries and — by dragging the benchmark leg — every existing "beats VAS" call. 1 Jul has passed and the next is 1 Oct, so the window is clean. **Any future window spanning 1 October breaks this assumption and must adjust for it.** |
+| 2026-07-26 | **Check-in 2: pre-registered 5 factual predictions** (FOMC 29-Jul hold 0.62; BHP report-date 0.68; IAG/RIO/NST report-dates 0.90–0.95) and **1 precursor match** (`csl-insider-buy-after-warning`, 0.55, out of 51 quant candidates across 3 rules). No rule or scorer change. | Routine check-in: fill the thin upper calibration band with primary-sourced reporting-date facts, and seed the precursor track with the one name that passed its pre-committed news condition. Direction on the insider-buy precursor was flipped from the stub default to *outperform* to match the rule's hypothesis. |
 | 2026-07-18 | **REVERTED the above. Rule restored to its original pre-committed form; a separate `screen_budget` added instead.** | The tightening was defensible (no cohort registered, no outcomes existed) but defensible is not the standard — the rule stays pre-committed. The actual mistake was conflating two different things: **the rule**, which must never be tuned, and **how many names can be researched per run**, which is pure logistics. Separating them fixes it with no compromise. `screen_budget` caps the sweep at the 15 most beaten-down matches, ranked by a pre-move characteristic applied blind to outcomes, and **reports every dropped name** rather than discarding it silently. The control-group property survives because the cohort is still chosen by a stated rule applied before any outcome is known. |

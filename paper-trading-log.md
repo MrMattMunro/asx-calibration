@@ -377,10 +377,26 @@ Two genuinely-uncertain calls (FOMC 0.62, BHP 0.68) plus three confirmed reporti
 populate the thin 0.9+ band — which directional stock calls can never reach. Provenance:
 `claude-opus-4-8[1m]` / `claude-code-main`, web_search true.
 
-**Precursor screen:** run (`screen.py --precursors`) — the `governance-overhang` rule matched 36
-names, budget-capped to the 15 most beaten-down (246 precursor×name tests this run). **Cohort NOT
-registered this check-in** — it resolves ~9 Sep (after the wrap) and honest registration needs a
-news-condition sweep per name; deferred as a decision rather than pasting unconfirmed stubs.
+**Precursor screen:** run (`screen.py --precursors`) across all three live rules. The quant leg
+produced **51 candidate stubs** (governance-overhang 15, insider-buy-after-warning 15,
+preupgraded-guidance-into-result 21). Each name's **news condition** was then verified by a targeted
+sweep (3 parallel Sonnet subagents). **Result: exactly 1 of 51 confirmed —**
+
+- **`csl-insider-buy-after-warning` → REGISTERED** (P 0.55, beats VAS, resolves 24 Sep). Both legs
+  confirmed against primary CSL PDFs: guidance cut/impairments 11 May 2026 + director Gordon Naylor's
+  on-market Appendix 3Y purchase 26 May. Direction flipped from the stub default to *outperform* per
+  the rule's hypothesis. Flagged as correlated with the live `csl-beats-vas` call (discount at wrap).
+- **governance-overhang: 0 confirmed.** DRO (ASIC) and WTC (AFP probe + chair resignation 7 Jul) had
+  genuine overhangs but no matching bullish *sector* catalyst inside the 14-day window (gold was
+  correcting, not rallying → NST/RMS/RRL fail part b). HVN cannot-verify.
+- **preupgraded-guidance: 0 confirmed.** The "2+ guidance upgrades" bar is demanding; CDA (29 Apr)
+  and CPU (10 Feb) had exactly one qualifying upgrade each, the rest fewer/none.
+
+**Multiple-comparisons count: 51 name×rule tests this run.** A ~2% confirmation rate is the intended
+behaviour of a demanding, pre-committed news condition — most quant matches are not real pattern
+matches. With one confirmed name there is no cohort and no control group this run; it is a single
+seed for the insider-buy rule, resolving post-wrap by design. Zero-confirmed on the other two rules
+is itself a loggable outcome, not a failed run.
 
 <!-- Template for future entries:
 ### YYYY-MM-DD — Check-in N
