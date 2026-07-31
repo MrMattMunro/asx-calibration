@@ -34,7 +34,7 @@ try:
 except Exception:
     pass
 
-from prices import Quote, Rotator, describe_flags, get_price
+from prices import Quote, Rotator, describe_flags, get_close_on, get_price
 
 HERE = Path(__file__).resolve().parent
 LEDGER = HERE / "predictions.json"
@@ -132,6 +132,11 @@ def main() -> None:
 
     final_dir: list[tuple[float, int]] = []
     final_dir_entries: list[dict] = []
+    # (entry, outcome) for everything graded this run. Kept separately because a
+    # directional entry that came due is graded IN MEMORY and only gets its
+    # `outcome` written back under --resolve; reading e["outcome"] downstream
+    # would hit None on a read-only run.
+    graded: list[tuple[dict, int]] = []
     provisional: list[tuple[dict, float, float, bool]] = []
     held: list[tuple[dict, str]] = []
     resolved_writes = 0
@@ -142,6 +147,7 @@ def main() -> None:
         if e.get("outcome") is not None:
             final_dir.append((e["prob"], int(e["outcome"])))
             final_dir_entries.append(e)
+            graded.append((e, int(e["outcome"])))
             continue
 
         # Pre-registration completeness is a hard gate. Absolute-basis entries
@@ -183,12 +189,42 @@ def main() -> None:
         truth = beat if claim_is_beat(e) else (not beat)
 
         if now >= parse_date(e["resolve_date"]):
-            outcome = 1 if truth else 0
+            # Grade at the CLOSE ON resolve_date, not at today's price. Running a
+            # check-in late must not lengthen the measurement window - the rule
+            # was pre-registered over [logged, resolve_date] and grading on a
+            # later price silently measures something else.
+            rd = parse_date(e["resolve_date"])
+            px, px_on = get_close_on(e["ticker"], rd)
+            if px is None:
+                held.append((e, f"no close on/before resolve_date {e['resolve_date']}"))
+                continue
+            r_ret = (px / e["ref_price"] - 1) * 100
+            if absolute:
+                r_bm_ret = e["threshold_pct"]
+            else:
+                bpx, _ = get_close_on(bm_ticker, rd)
+                if bpx is None:
+                    held.append(
+                        (e, f"no {bm_ticker} close on/before resolve_date {e['resolve_date']}")
+                    )
+                    continue
+                r_bm_ret = (bpx / e["bm_ref"] - 1) * 100
+            r_beat = r_ret > r_bm_ret
+            r_truth = r_beat if claim_is_beat(e) else (not r_beat)
+            outcome = 1 if r_truth else 0
             final_dir.append((e["prob"], outcome))
             final_dir_entries.append(e)
+            graded.append((e, outcome))
             if args.resolve:
                 e["outcome"] = outcome
                 e["resolved_on"] = now.isoformat()
+                # Audit trail: which session actually priced the grade, and the
+                # two numbers compared. Makes a late-run check-in inspectable.
+                e["graded_on"] = {
+                    "session": px_on.isoformat() if px_on else None,
+                    "subject_return_pct": round(r_ret, 4),
+                    "bar_pct": round(r_bm_ret, 4),
+                }
                 resolved_writes += 1
         else:
             provisional.append((e, ret, bm_ret, truth))
@@ -203,6 +239,7 @@ def main() -> None:
         if e.get("outcome") is not None and e.get("source"):
             factual_scored.append((e["prob"], int(e["outcome"])))
             factual_entries.append(e)
+            graded.append((e, int(e["outcome"])))
         else:
             factual_pending.append(e)
 
@@ -261,6 +298,19 @@ def main() -> None:
             mp = sum(p for p, _ in bucket) / len(bucket)
             af = sum(o for _, o in bucket) / len(bucket)
             out.append(f"| {lo:.1f}–{min(hi,1.0):.1f} | {mp:.2f} | {af:.2f} | {len(bucket)} |")
+        # The bands start at 0.5, so a sub-0.5 probability would be counted in
+        # the Brier score but vanish from this table without trace. The house
+        # convention is to phrase every claim so its probability is >= 0.5
+        # (state the complement instead); this makes a breach loud rather than
+        # silent.
+        low = [p for p, _ in all_scored if p < 0.5]
+        if low:
+            out.append("")
+            out.append(
+                f"> ⚠️ **{len(low)} resolved prediction(s) carry P < 0.5 "
+                f"({', '.join(f'{p:.2f}' for p in sorted(low))}) and are NOT shown in any band "
+                f"above** — they are still in the Brier score. Convention: phrase claims so P ≥ 0.5."
+            )
     out.append("")
 
     # --- Small-n caveat ---------------------------------------------------
@@ -319,10 +369,10 @@ def main() -> None:
     )
     out.append("")
     cells: dict[tuple[str, str], list[tuple[float, int]]] = {}
-    for e in final_dir_entries + factual_entries:
+    for e, o in graded:
         pv = e.get("provenance") or {}
         key = (pv.get("model", "unverified"), pv.get("surface", "unverified"))
-        cells.setdefault(key, []).append((e["prob"], int(e["outcome"])))
+        cells.setdefault(key, []).append((e["prob"], o))
     if not cells:
         out.append("_No resolved predictions yet._")
     else:
@@ -334,13 +384,13 @@ def main() -> None:
     out.append("")
 
     # --- Precursor slice --------------------------------------------------
-    derived = [e for e in final_dir_entries + factual_entries if e.get("derived_from")]
-    cold = [e for e in final_dir_entries + factual_entries if not e.get("derived_from")]
+    derived = [(e, o) for e, o in graded if e.get("derived_from")]
+    cold = [(e, o) for e, o in graded if not e.get("derived_from")]
     if derived:
         out.append("#### Precursor-derived vs cold predictions")
         out.append("")
-        d_b = brier([(e["prob"], int(e["outcome"])) for e in derived])
-        c_b = brier([(e["prob"], int(e["outcome"])) for e in cold])
+        d_b = brier([(e["prob"], o) for e, o in derived])
+        c_b = brier([(e["prob"], o) for e, o in cold])
         out.append(f"- Precursor-derived: Brier {d_b:.4f} (n={len(derived)})")
         out.append(
             f"- Cold: Brier {c_b:.4f} (n={len(cold)})" if c_b is not None else "- Cold: none resolved"

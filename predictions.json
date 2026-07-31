@@ -16,8 +16,8 @@
       "method": "theme",
       "cluster": "gold",
       "rationale": "Gold ~-3% on the week and ~26% off its January high; momentum reversing into the 29 Jul quarterly. This deliberately reverses the original bullish watch-call.",
-      "outcome": null,
-      "resolved_on": null,
+      "outcome": 0,
+      "resolved_on": "2026-07-31",
       "source": null,
       "provenance": {
         "model": "claude-opus-4-8[1m]",
@@ -25,6 +25,11 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-18"
+      },
+      "graded_on": {
+        "session": "2026-07-29",
+        "subject_return_pct": 7.5884,
+        "bar_pct": 2.6625
       }
     },
     {
@@ -439,8 +444,8 @@
       "bm_ref": null,
       "method": "base-rate",
       "cluster": "market-beta",
-      "outcome": null,
-      "resolved_on": null,
+      "outcome": 1,
+      "resolved_on": "2026-07-31",
       "source": null,
       "provenance": {
         "model": "claude-opus-4-8[1m]",
@@ -455,7 +460,12 @@
       "threshold_pct": 0.0,
       "resolve_date": "2026-07-30",
       "resolution": "price: VAS.AX price-return > 0.0% over [logged, resolve_date]. Absolute basis - no benchmark leg.",
-      "rationale": "Short-horizon companion, chosen to compound sample faster and to straddle a single identified event. Base rate over ~8 trading days is 56.9% positive (n=6,447). Shaded to 0.54 because the 29 Jul quarterly CPI print falls inside this window and is the cited swing factor for the 11 Aug RBA decision, so event risk is concentrated rather than diffuse. Same ^AXJO-vs-ASX300 caveat as the wrap entry."
+      "rationale": "Short-horizon companion, chosen to compound sample faster and to straddle a single identified event. Base rate over ~8 trading days is 56.9% positive (n=6,447). Shaded to 0.54 because the 29 Jul quarterly CPI print falls inside this window and is the cited swing factor for the 11 Aug RBA decision, so event risk is concentrated rather than diffuse. Same ^AXJO-vs-ASX300 caveat as the wrap entry.",
+      "graded_on": {
+        "session": "2026-07-30",
+        "subject_return_pct": 1.8362,
+        "bar_pct": 0.0
+      }
     },
     {
       "logged": "2026-07-19",
@@ -498,16 +508,17 @@
       "method": "macro",
       "cluster": "us-rates",
       "rationale": "Current range 3.50-3.75%, held since the 2026-06-17 meeting (verified against the Fed's own press release, monetary20260617a). A 25bp cut is priced at ~0%; the live debate is hold vs a 25bp HIKE, with hike odds rising through July (~12% mid-July to ~38% by 24 Jul per CBS citing CME FedWatch) on an oil>US$100 reinflation narrative. P set at market-implied hold (~0.62), NOT a differentiated view - a large deviation here would be exactly the overconfidence this experiment is built to detect. The exact live FedWatch snapshot for 26 Jul could not be primary-verified (JS-rendered page), so anchored to the 24 Jul figure.",
-      "outcome": null,
-      "resolved_on": null,
-      "source": null,
+      "outcome": 1,
+      "resolved_on": "2026-07-31",
+      "source": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
       "provenance": {
         "model": "claude-opus-4-8[1m]",
         "surface": "claude-code-main",
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
-      }
+      },
+      "resolution_note": "TRUE. Statement verbatim: 'The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent.' Unchanged from the range set 2026-06-17 (cross-checked against monetary20260617a.htm). Vote 9-3; Hammack, Kashkari and Logan dissented preferring a 25bp HIKE - i.e. the two-sided risk priced at logging time was real and fell on the hike side. Retrieval caveat, recorded rather than hidden: the verifying agent found the July press-release INDEX page did not list this statement. Independently re-checked against the official FOMC calendar (federalreserve.gov/monetarypolicy/fomccalendars.htm), which links the 29 Jul statement HTML, PDF, implementation note and press conference. The index omission was a retrieval/summariser artifact, not a missing document."
     },
     {
       "id": "2026-07-26-nst-reports-29jul",
@@ -523,16 +534,17 @@
       "method": "reporting",
       "cluster": "independent",
       "rationale": "Date confirmed by direct read of NST's own ASX-lodged Production Update (2 Jul 2026): 'Northern Star will release its June quarterly results on Wednesday, 29 July 2026.' High confidence; the residual below 1.00 reflects that companies occasionally shift a lodged date.",
-      "outcome": null,
-      "resolved_on": null,
-      "source": null,
+      "outcome": 1,
+      "resolved_on": "2026-07-31",
+      "source": "https://www.nsrltd.com/media/4mslqry1/june-2026-quarterly-activities-report-29-07-2026.pdf",
       "provenance": {
         "model": "claude-opus-4-8[1m]",
         "surface": "claude-code-main",
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
-      }
+      },
+      "resolution_note": "TRUE. Primary PDF cover page verbatim: 'ASX Announcement: NST / 29 July 2026 / Quarterly Report / June 2026'. WebFetch's extractor reported the PDF as password-protected (owner flag); text was obtained by running poppler pdftotext over the file directly, so this is a primary-source read rather than a search snippet."
     },
     {
       "id": "2026-07-26-rio-reports-29jul",
@@ -548,16 +560,17 @@
       "method": "reporting",
       "cluster": "independent",
       "rationale": "Date confirmed by direct read of Rio Tinto's own IR results page (2026 half-year results, 29 July 2026), corroborated by its SEC 6-K key-dates filing and the RNS announcement. A search snippet conflating 13 Aug (the interim-dividend ex-date) with the results date was rejected.",
-      "outcome": null,
-      "resolved_on": null,
-      "source": null,
+      "outcome": 1,
+      "resolved_on": "2026-07-31",
+      "source": "https://www.riotinto.com/en/invest",
       "provenance": {
         "model": "claude-opus-4-8[1m]",
         "surface": "claude-code-main",
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
-      }
+      },
+      "resolution_note": "TRUE on the ASX-facing date, which is what the rule asks. Rio Tinto's own investor page states '2026 half year results - Announced on Wednesday 29 July 2026', confirmed twice across the invest and results pages. DUAL-LISTING NUANCE, recorded because it could have gone the other way: the release was a single simultaneous global event at ~22:30 UTC, which is 29 Jul in Sydney but 28 Jul in London. An LSE/RNS-framed reading of the same event would date it 28 Jul and resolve this FALSE. The rule's wording ('an ASX announcement or Rio Tinto's investor page') selects the ASX/company framing, so TRUE. Not cross-checked against a raw ASX announcement PDF or SEC 6-K: asx.com.au is JS-rendered and EDGAR returned 403. LESSON: future dual-listed reporting-date claims should name the exchange and timezone explicitly."
     },
     {
       "id": "2026-07-26-iag-reports-13aug",
@@ -633,6 +646,229 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "precursor-screen-2026-07-26"
+      }
+    },
+    {
+      "id": "2026-07-31-rmd-reports-6aug",
+      "logged": "2026-07-31",
+      "type": "factual",
+      "ticker": "RMD",
+      "claim": "ResMed releases its Q4 FY26 results on 2026-08-06 (US Eastern date)",
+      "prob": 0.94,
+      "resolution": "factual: ResMed's investor site (investor.resmed.com) or an SEC filing confirms the Q4 FY26 earnings release occurred on 2026-08-06 US Eastern date. Record the URL in 'source'.",
+      "resolve_date": "2026-08-08",
+      "cluster": "reporting-dates",
+      "method": "primary-calendar",
+      "rationale": "ResMed's own press release of 30 Jun 2026 states results will be reported 'Thursday, August 6, 2026, after the New York Stock Exchange closes', webcast 4:30pm ET. Fetched and read directly, not via snippet. Short horizon (6 days) chosen to compound sample. Not higher than 0.94 because a company-published date is a statement of intent, not a guarantee - dates do move - and the resolve_date is set at 08-08 to absorb the AEST/US date offset rather than let a timezone technicality decide the outcome.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "news-sweep-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-fmg-reports-20aug",
+      "logged": "2026-07-31",
+      "type": "factual",
+      "ticker": "FMG",
+      "claim": "Fortescue releases its FY26 full-year results on 2026-08-20",
+      "prob": 0.85,
+      "resolution": "factual: an ASX announcement or Fortescue's own investor key-dates page confirms FMG released its FY26 full-year results on 2026-08-20. Record the URL in 'source'.",
+      "resolve_date": "2026-08-21",
+      "cluster": "reporting-dates",
+      "method": "primary-calendar-conflict",
+      "rationale": "DELIBERATE TEST OF SOURCE HIERARCHY. Fortescue's own key-dates page reads verbatim '20 August 2026 FY26 Full Year Results' (fetched directly). Multiple aggregators instead report 24 Aug. The house rule says primary beats aggregator, and that rule won earlier in this same sweep - an aggregator claimed Telstra reports 20 Aug while Telstra's own key-dates page says 13 Aug. But a clean, unexplained 4-day conflict is genuine doubt, not zero doubt, so this sits at 0.85 rather than the 0.93+ a clean primary-confirmed date would earn. If this resolves TRUE it is evidence the hierarchy holds; FALSE would be a genuinely surprising and useful result.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "news-sweep-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-dro-reports-26aug",
+      "logged": "2026-07-31",
+      "type": "factual",
+      "ticker": "DRO",
+      "claim": "DroneShield releases its H1 2026 (half-year to 30 June 2026) results on 2026-08-26",
+      "prob": 0.72,
+      "resolution": "factual: an ASX announcement or DroneShield's investor page confirms DRO released its H1 2026 results on 2026-08-26. Record the URL in 'source'.",
+      "resolve_date": "2026-08-27",
+      "cluster": "reporting-dates",
+      "method": "aggregator-only",
+      "rationale": "NO primary confirmation exists. DroneShield's investor-relations page publishes no forward calendar and the ASX announcements list could not be reached. Several independent outlets converge on 26 Aug and it matches the prior-year late-August cadence (HY25 released ~26-28 Aug 2025, sources differing by a day or two even on the historical date). Convergent aggregators have already been caught wrong once in this same sweep (Telstra), so convergence is weak evidence, not strong. 0.72 is placed to fill the empty 0.7-0.8 calibration band with an honestly uncertain call rather than pad the 0.9 band with another published-calendar read.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "news-sweep-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-tavneos-ec-pending-26aug",
+      "logged": "2026-07-31",
+      "type": "factual",
+      "ticker": null,
+      "claim": "As at 2026-08-26 the EMA TAVNEOS referral record still shows no adopted European Commission final decision on the Article 20 procedure",
+      "prob": 0.62,
+      "resolution": "factual: check the EMA TAVNEOS referral page (https://www.ema.europa.eu/en/medicines/human/referrals/tavneos) on 2026-08-26. Resolve TRUE if the recorded procedure status is still the CHMP opinion stage with no European Commission decision listed. Resolve FALSE if the page (or the EC Union Register of medicinal products) records an EC decision dated on or before 2026-08-26. Record the URL in 'source'.",
+      "resolve_date": "2026-08-26",
+      "cluster": "csl-regulatory",
+      "method": "process-timeline",
+      "rationale": "The CHMP adopted an opinion on 25 Jun 2026 recommending REVOCATION of the TAVNEOS EU marketing authorisation over data-integrity concerns in the pivotal ADVOCATE trial (non-pharmacovigilance Article 20 referral opened 29 Jan 2026). Standard EU practice is a binding EC decision within roughly 67 days of the CHMP opinion, which lands ~31 Aug 2026 - just AFTER this window - but referral timetables are not published and can run faster or slower. So 'still pending on 26 Aug' is more likely than not without being safe. Chosen deliberately as a genuine forecasting problem rather than a calendar read: unlike the reporting-date entries, no source states the answer in advance. Phrased so the probability is >= 0.5 per the house convention, and phrased as a positive read of a published status field rather than an argument from absence - the flaw already logged against the dro-asic-live rule.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "news-sweep-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-vas-positive-to-14aug",
+      "logged": "2026-07-31",
+      "type": "directional",
+      "ticker": "VAS",
+      "basis": "absolute",
+      "claim": "VAS price-return is positive between 2026-07-31 and 2026-08-14",
+      "prob": 0.56,
+      "resolution": "price: VAS.AX price-return > 0.0% over [logged, resolve_date]. Absolute basis - no benchmark leg.",
+      "resolve_date": "2026-08-14",
+      "ref_price": 111.08,
+      "bm_ref": null,
+      "threshold_pct": 0.0,
+      "cluster": "market-beta",
+      "method": "base-rate",
+      "rationale": "Short-horizon companion (~10 trading days) added to compound directional sample, which is the binding constraint on this experiment. Anchored to the recomputed NON-OVERLAPPING base rate of 55.3% positive over ~8-day windows (SE 1.8pp) from the 2026-07-19 correction, not the discredited overlapping-window figure. The 11 Aug RBA decision falls inside the window, but after the 29 Jul Q2 CPI print (headline 3.8%, trimmed mean 3.6% per ABS) an August hike is priced near ~4% and Westpac withdrew its last-standing hike call, so in-window event risk is LOWER than for the entries written on 19 Jul. Deliberately NOT shaded above base rate: the 2026-07-19 correction established that adjustments of a few points sit inside the noise band and are not measurable, so inventing one would be false precision.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "news-sweep-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-dro-governance-overhang-suppresses-good-news",
+      "logged": "2026-07-31",
+      "type": "directional",
+      "ticker": "DRO",
+      "claim": "DRO underperforms VAS on price return between 2026-07-31 and 2026-08-30",
+      "prob": 0.55,
+      "resolution": "price: DRO.AX price-return < VAS.AX price-return over [logged, resolve_date]",
+      "resolve_date": "2026-08-30",
+      "ref_price": 1.695,
+      "bm_ref": 111.08,
+      "method": "precursor",
+      "cluster": "defence",
+      "rationale": "Precursor cohort match, BOTH legs confirmed. (a) ASIC investigation disclosed 12 May 2026 into DroneShield announcements of 1-20 Nov 2025 and related executive share trading, still open as at 31 Jul 2026. (b) Bullish SECTOR news: ASX defence/counter-drone theme among the market's strongest performers, reported 28 Jul 2026. Direction matches the rule hypothesis (underperform), so the stub default was NOT flipped. ⚠️ CLUSTER CHOICE, stated openly: tagged `defence` rather than `governance`. It is very highly correlated with the live `2026-07-18-dro-underperform` call - same stock, same direction, overlapping window - and that same-stock correlation is far stronger than its correlation with the other cohort member (WTC) via the rule. Tagging `defence` makes score.py discount it against the existing DRO entries, which lowers effective n. Chosen because it is the more conservative and more honest number, even though it breaks the convention of tagging a cohort by its rule.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "derived_from": "governance-overhang-suppresses-good-news",
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "precursor-screen-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-wtc-governance-overhang-suppresses-good-news",
+      "logged": "2026-07-31",
+      "type": "directional",
+      "ticker": "WTC",
+      "claim": "WTC underperforms VAS on price return between 2026-07-31 and 2026-08-30",
+      "prob": 0.55,
+      "resolution": "price: WTC.AX price-return < VAS.AX price-return over [logged, resolve_date]",
+      "resolve_date": "2026-08-30",
+      "ref_price": 36.3,
+      "bm_ref": 111.08,
+      "method": "precursor",
+      "cluster": "governance",
+      "rationale": "Precursor cohort match, BOTH legs confirmed. (a) AFP investigation into co-founder/chair Richard White plus a separate ASIC probe into ~A$229m of his share trading; White stepped down as executive chair ~7 Jul 2026, no charges laid, matters ongoing as at 31 Jul 2026. (b) Bullish SECTOR news: S&P/ASX 200 Information Technology sector-wide rally ~+4% on 27 Jul 2026. Direction matches the rule hypothesis, stub default not flipped. This is the cleaner of the two governance matches - unlike DRO it does not overlap an existing live position.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "derived_from": "governance-overhang-suppresses-good-news",
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "precursor-screen-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-cpu-preupgraded-guidance-into-result",
+      "logged": "2026-07-31",
+      "type": "directional",
+      "ticker": "CPU",
+      "claim": "CPU beats VAS on price return between 2026-07-31 and 2026-09-14",
+      "prob": 0.55,
+      "resolution": "price: CPU.AX price-return > VAS.AX price-return over [logged, resolve_date]",
+      "resolve_date": "2026-09-14",
+      "ref_price": 40.94,
+      "bm_ref": 111.08,
+      "method": "precursor",
+      "cluster": "reporting",
+      "rationale": "Precursor cohort match, BOTH legs confirmed. (a) TWO dated company-issued upgrades: 10 Feb 2026 management EPS guidance raised to ~144cps, and 5 May 2026 margin-income guidance 'upgraded to around $740m' - the latter read directly from the lodged ASX announcement PDF, which itself refers back to guidance 'upgraded in February 2026', so the two events are corroborated by the primary document rather than by two separate secondary reports. ⚠️ DIRECTION FLIPPED from the stub default: this rule's hypothesis is that pre-upgraded names BEAT VAS into the result, but screen.py emits every stub as 'underperforms'. Registering the stub as emitted would have tested the rule backwards. Same flip was applied to CSL at check-in 2. Leg B is satisfied structurally rather than by a published date: both names have a 30 June balance date and ASX Listing Rule 4.3A requires the preliminary final report within two months (by 31 Aug), comfortably inside the reaction window. Recorded because the sweep could only infer the date from prior-year pattern, which on its own would have been weak evidence.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "derived_from": "preupgraded-guidance-into-result",
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "precursor-screen-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-07-31-min-preupgraded-guidance-into-result",
+      "logged": "2026-07-31",
+      "type": "directional",
+      "ticker": "MIN",
+      "claim": "MIN beats VAS on price return between 2026-07-31 and 2026-09-14",
+      "prob": 0.55,
+      "resolution": "price: MIN.AX price-return > VAS.AX price-return over [logged, resolve_date]",
+      "resolve_date": "2026-09-14",
+      "ref_price": 57.98,
+      "bm_ref": 111.08,
+      "method": "precursor",
+      "cluster": "reporting",
+      "rationale": "Precursor cohort match, BOTH legs confirmed. (a) TWO dated company-issued upgrades from Mineral Resources' own quarterly activity reports: 29 Jan 2026 (Wodgina 220-240k -> 260-280k dmt SC6, Mt Marion 160-180k -> 190-210k dmt SC6) and 30 Apr 2026 (Onslow Iron 17.1-18.8 -> 17.7-19.4 Mwmt, Mining Services 305-325 -> 320-330 Mt). Both are the company raising its own forward guidance, not broker upgrades and not results beating a prior range. ⚠️ DIRECTION FLIPPED from the stub default, as for CPU. Leg B is satisfied structurally rather than by a published date: both names have a 30 June balance date and ASX Listing Rule 4.3A requires the preliminary final report within two months (by 31 Aug), comfortably inside the reaction window. Recorded because the sweep could only infer the date from prior-year pattern, which on its own would have been weak evidence.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "derived_from": "preupgraded-guidance-into-result",
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "precursor-screen-2026-07-31"
       }
     }
   ]

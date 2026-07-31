@@ -34,6 +34,7 @@ import json
 import os
 import sys
 from dataclasses import dataclass, field
+from datetime import date, timedelta
 from pathlib import Path
 
 try:
@@ -192,6 +193,44 @@ def get_price_eodhd(ticker: str) -> float | None:
     except Exception:
         return None
     return None
+
+
+def get_close_on(ticker: str, on: date) -> tuple[float | None, date | None]:
+    """Close on the last trading session ON OR BEFORE `on`.
+
+    Grading must use the price at the pre-registered resolve_date, not whatever
+    the price happens to be on the day the check-in is run. Those are the same
+    number only if the check-in lands exactly on resolve_date, which it usually
+    does not - and the gap silently lengthens the measurement window, which is a
+    rule violation, not a rounding error.
+
+    Returns (close, actual_session_date). The date is returned so the caller can
+    record WHICH session was used - a resolve_date falling on a weekend or public
+    holiday legitimately grades on the prior session, and that should be visible
+    rather than assumed.
+    """
+    sym = f"{ticker}.AX"
+    try:
+        # A generous lookback so long weekends / holiday closures still find a
+        # session, without pulling more history than needed.
+        start = on - timedelta(days=10)
+        end = on + timedelta(days=1)
+        hist = yf.Ticker(sym).history(start=start.isoformat(), end=end.isoformat())
+        if hist.empty:
+            return None, None
+        sessions = [
+            (idx.date(), float(c))
+            for idx, c in hist["Close"].dropna().items()
+            if idx.date() <= on
+        ]
+        if not sessions:
+            return None, None
+        sess_date, close = sessions[-1]
+        if not close or close != close:  # zero / NaN
+            return None, None
+        return close, sess_date
+    except Exception:
+        return None, None
 
 
 def googlefinance_recipe(ticker: str) -> str:

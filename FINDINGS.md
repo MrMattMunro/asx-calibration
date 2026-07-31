@@ -18,17 +18,55 @@ Written down on 2026-07-18, before any prediction resolved, so it cannot be rati
 
 ## Results
 
-**One prediction has resolved.** As at check-in 2 (2026-07-26) the ledger holds **24 predictions** — 1
-resolved, 23 live. The first cluster comes due imminently: three directional entries and two factual
-reporting-date calls resolve **29–30 July 2026** (the NST quarterly, the RIO half-year, the FOMC
-decision, and the two short-horizon VAS index calls).
+**Six predictions have resolved.** As at check-in 3 (2026-07-31) the ledger holds **34 predictions** —
+6 resolved, 28 live. The first cluster came due 29–30 July and graded cleanly.
 
 | Track | n | Brier | vs 0.25 baseline | Verdict |
 | ----- | - | ----- | ---------------- | ------- |
-| Directional | 0 | — | — | pending (15 live) |
-| Factual | 1 | 0.0100 | n/a | **n=1 — no verdict possible** (8 live) |
+| Directional | 2 | 0.2858 | **does NOT beat it** | no directional skill — **as pre-committed** |
+| Factual | 4 | 0.0404 | n/a | 100% accurate, but see the caveat below |
 
 Run `python score.py` for the live numbers.
+
+### The directional track is behaving exactly as predicted
+
+The first two directional resolutions produced a Brier of **0.2858 — worse than the 0.25 coin-flip
+baseline**, and worse than the base-rate baseline too. This is the outcome written down on 2026-07-18
+before anything resolved. It is reported here as a headline rather than buried, because a result that
+confirms an unflattering pre-commitment is the one most likely to be quietly de-emphasised.
+
+`nst-underperform` (P 0.60) is the instructive failure: it was wrong on **mechanism as well as
+direction**. The thesis was "gold momentum reversing into the quarterly." What actually happened is that
+NST had cut FY26 guidance twice and fallen ~40% in three months on KCGM execution problems, then beat an
+already-lowered bar on 29 Jul. The stock moved on its own operational story, not on gold. A confident
+narrative about a sector was applied to a stock whose price was being driven by something else entirely.
+
+### ⚠️ The factual track is currently too easy — the Brier flatters it
+
+The factual Brier of 0.0404 at 100% accuracy should **not** be read as evidence of forecasting skill.
+Three of the four resolved factual entries are of the form *"will company X report on the date its own
+investor calendar already publishes?"*, verified from a primary source **at the time of logging**. Dates
+do sometimes move, so these are real forecasts — but weak ones, and they are close to free.
+
+If the upper calibration band is built entirely from published-calendar reads, the wrap will be able to
+conclude only that the system can read a calendar. The `fomc-holds-29jul` entry (P 0.62) is the one
+resolved factual call with genuine two-sided uncertainty, and the 9–3 vote with three dissenters
+preferring a *hike* confirms the uncertainty was real rather than theatrical.
+
+**Corrective adopted at check-in 3:** new factual entries are weighted toward claims with real
+uncertainty and placed to fill the empty 0.7–0.8 and 0.8–0.9 bands, rather than padding the 0.9 band.
+`tavneos-ec-pending-26aug` (P 0.62) is the model of what is wanted — no source states the answer in
+advance. This must be read at the wrap: the factual Brier is a **mixture** of a hard sub-track and an
+easy one, and the mixture proportion moved during the experiment.
+
+### An under-confident entry, left standing
+
+`rba-holds-11aug` was pre-registered at **P 0.70 on 18 July**. The 29 July Q2 CPI print (headline 3.8%,
+trimmed mean 3.6%) then dropped market-implied odds of an August hike to ~4%, and Westpac withdrew its
+last-standing hike call. On today's information the honest number would be ~0.95. **The pre-registered
+0.70 stands uncorrected** — the ledger is append-only. If it resolves TRUE it should be read at the wrap
+as a visibly *under*-confident call, which is as much a calibration failure as over-confidence and is
+rarer to catch in the wild.
 
 ### Resolved: `dro-asic-live` (P 0.90 → TRUE)
 
@@ -61,18 +99,54 @@ Seeded, grading continues past the wrap by design (most precursor rules resolve 
   news condition (`csl-insider-buy-after-warning`, registered, resolves 24 Sep). `governance-overhang`
   and `preupgraded-guidance-into-result` produced **0 confirmed matches** — a real, reported outcome,
   not a failed run. The ~2% confirmation rate is the intended effect of a demanding, pre-committed news
-  condition. With a single confirmed name there is no cohort and no control group this run. **51
-  name×rule comparisons** this run (kept visible per the multiple-comparisons discipline).
+  condition. With a single confirmed name there is no cohort and no control group this run. ~~**51
+  name×rule comparisons** this run~~ — **see the correction below; this figure was wrong.**
+
+- **Check-in 3 (2026-07-31):** 83 names screened (SVW skipped, delisted); 50 shortlisted after the
+  research budget → **4 confirmed**, the largest cohort yet.
+  - **`governance-overhang` → 2 confirmed (DRO, WTC)** — the first matches this rule has ever produced.
+    Both legs primary-checked: DRO's ASIC investigation of 12 May still open, against a defence /
+    counter-drone sector rally; WTC's AFP investigation plus ASIC probe into ~A$229m of chair share
+    trading, against an ASX IT sector rally. 13 of 15 failed leg A outright.
+  - **`preupgraded-guidance` → 2 confirmed (CPU, MIN)** — both with two dated *company-issued* guidance
+    upgrades. **Direction flipped from the stub default**, as for CSL at check-in 2: the rule
+    hypothesises these names *beat* VAS, but `screen.py` emits every stub as "underperforms", so
+    registering as emitted would test the rule backwards.
+  - **`insider-buy-after-warning` → 0 confirmed** for the second run running.
+  - Strictness is the point, and it bit in both directions: Harvey Norman was rejected because its ASIC
+    matter was **resolved** by judgment on 28 Jul (fails "unresolved"); ARB was rejected because its
+    genuine on-market director purchase followed a January warning, outside the 45-day window.
+    "Reaffirmed", "narrowed", "guided to the top end" and results merely *beating* prior guidance were
+    all rejected as non-upgrades.
+
+- **⚠️ CORRECTION to the multiple-comparisons record (made 2026-07-31).** Check-in 2 logged **51**
+  name×rule comparisons. That was wrong: 51 was the count of quant **matches** (15+15+21), not tests
+  **performed**. `screen.py` accumulates `tests += len(rows)` for every rule, giving 82 names × 3 rules
+  = **246** tests, and the file has not changed since 2026-07-19 — before check-in 2 ran. So that run's
+  true multiple-comparisons exposure was also ~246, and the logged figure **understated it by roughly
+  5×**. Check-in 3's count is **246**. Recorded prominently because the error ran in the direction that
+  flattered the method, and the whole purpose of this footer is to keep that risk visible.
 
 ## Calibration table
 
+As at check-in 3 (2026-07-31). Effective n ≈ 6.0 — far below the ~20 needed to say anything firm.
+
 | Prob band | Mean predicted | Actual frequency | n |
 |-----------|----------------|------------------|---|
-| 0.5–0.6 | — | — | 0 |
-| 0.6–0.7 | — | — | 0 |
+| 0.5–0.6 | 0.54 | 1.00 | 1 |
+| 0.6–0.7 | 0.61 | 0.50 | 2 |
 | 0.7–0.8 | — | — | 0 |
 | 0.8–0.9 | — | — | 0 |
-| 0.9–1.0 | 0.90 | 1.00 | 1 |
+| 0.9–1.0 | 0.93 | 1.00 | 3 |
+
+Every cell is n ≤ 3. **No cell here supports any inference.** The 0.7–0.8 and 0.8–0.9 bands were still
+empty at this check-in and were deliberately targeted by the predictions registered on 2026-07-31.
+
+**Known reporting constraint:** the bands start at 0.5, so a prediction carrying P < 0.5 would count in
+the Brier score but appear in **no** band — vanishing from this table without trace. The house convention
+is therefore to phrase every claim so its probability is ≥ 0.5 (state the complement instead). A guard
+added at check-in 3 makes any breach print a loud warning rather than fail silently. No entry has
+breached it to date.
 
 ## Provenance
 
@@ -93,3 +167,8 @@ made at this wrap**, whatever the numbers look like — see the README section o
 | 2026-07-19 | Verified no VAS ex-distribution date falls inside the prediction window. | VAS distributes quarterly (1 Jan/Apr/Jul/Oct). An ex-date inside a window mechanically drops the price and would bias *both* the new absolute entries and — by dragging the benchmark leg — every existing "beats VAS" call. 1 Jul has passed and the next is 1 Oct, so the window is clean. **Any future window spanning 1 October breaks this assumption and must adjust for it.** |
 | 2026-07-26 | **Check-in 2: pre-registered 5 factual predictions** (FOMC 29-Jul hold 0.62; BHP report-date 0.68; IAG/RIO/NST report-dates 0.90–0.95) and **1 precursor match** (`csl-insider-buy-after-warning`, 0.55, out of 51 quant candidates across 3 rules). No rule or scorer change. | Routine check-in: fill the thin upper calibration band with primary-sourced reporting-date facts, and seed the precursor track with the one name that passed its pre-committed news condition. Direction on the insider-buy precursor was flipped from the stub default to *outperform* to match the rule's hypothesis. |
 | 2026-07-18 | **REVERTED the above. Rule restored to its original pre-committed form; a separate `screen_budget` added instead.** | The tightening was defensible (no cohort registered, no outcomes existed) but defensible is not the standard — the rule stays pre-committed. The actual mistake was conflating two different things: **the rule**, which must never be tuned, and **how many names can be researched per run**, which is pure logistics. Separating them fixes it with no compromise. `screen_budget` caps the sweep at the 15 most beaten-down matches, ranked by a pre-move characteristic applied blind to outcomes, and **reports every dropped name** rather than discarding it silently. The control-group property survives because the cohort is still chosen by a stated rule applied before any outcome is known. |
+| 2026-07-31 | **`score.py` crash fix — read-only runs died as soon as anything resolved.** The provenance table and precursor slice read `int(e["outcome"])` back off the ledger dict, but a directional entry that has just come due is graded *in memory* and only has `outcome` written under `--resolve`. Fixed by threading `(entry, outcome)` pairs through to the reporting layer. | Pure defect, no grading change. Worth logging because of *when* it surfaced: the command documented as "safe to run any time" was broken from the moment the first prediction came due — i.e. it had never actually been exercised on the path that matters. A gate that has never run is not a gate. |
+| 2026-07-31 | **Grading now uses the close ON `resolve_date`, not the price on the day the check-in is run.** Added `prices.get_close_on()` (last session on or before `resolve_date`); `--resolve` additionally writes a `graded_on` block recording the session used, the subject return and the bar. | **This was a silent rule violation, not a rounding error.** `prices.py` had no historical lookup at all, so a check-in run late measured a longer window than the rule pre-registered. NST's rule specifies `[2026-07-18, 2026-07-29]`; grading it on 31 Jul prices measured 13 days, not 11. **Verified outcome-neutral before adoption** — both entries due today grade identically old and new (NST 0, VAS 1), so this cannot be a grader retro-fitted to flatter the score, and that verification is *why* it was done today rather than later. The exposure is concentrated: **14 of 15 live directional entries resolve on 2026-08-26, which is the wrap date itself** — running the wrap one day late would have mis-windowed every one of them. |
+| 2026-07-31 | **Guard added for probabilities below 0.5.** The calibration bands start at 0.5, so a P < 0.5 entry would count in the Brier score but appear in no band. `score.py` now prints a loud warning naming any such entry. Convention restated: phrase claims so P ≥ 0.5, stating the complement where needed. | Found while drafting a genuinely-uncertain entry that naturally wanted P ≈ 0.4. Nothing had breached it yet, so this is a fix made *before* the failure rather than after — the cheap case. Also drove the wording of `tavneos-ec-pending-26aug`, phrased as a positive read of a published status field rather than an argument from absence, which is the flaw already logged against the `dro-asic-live` rule. |
+| 2026-07-31 | **Precursor cluster tagged by correlation, not by rule, for one entry.** `dro-governance-overhang…` is tagged `cluster: "defence"` rather than `"governance"`. | It is nearly the same bet as the live `dro-underperform` call — same stock, same direction, overlapping window — and that same-stock correlation is far stronger than its link to the other cohort member (WTC) through the rule. Tagging `defence` makes `score.py` discount it against the existing DRO entries, **lowering** effective n. The conservative choice, taken at the cost of the tag-by-rule convention, and recorded here because it is a deviation. **Related observation, uncorrectable:** the six existing reporting-date factual entries are all tagged `cluster: "independent"`, which counts them at full weight. They are independent *events*, but the *errors* are highly correlated — same question type, same evidence source, same failure mode if published calendars turn out unreliable. Those tags are pre-registered and stand; new reporting-date entries share `cluster: "reporting-dates"` instead. Effective n on the factual track is therefore **overstated** for the earlier entries. |
+| 2026-07-31 | **Provenance model changed:** entries logged from this check-in carry `claude-opus-5[1m]`; check-ins 1–2 carry `claude-opus-4-8[1m]`. | Recorded because the provenance table now spans two models mid-experiment. This changes nothing about the standing pre-commitment: **no model-comparison claim will be made at the wrap.** Per-cell n is in the low single digits, the split is confounded with time and with question type, and a flattering cut will always be available. The field exists for description only. |

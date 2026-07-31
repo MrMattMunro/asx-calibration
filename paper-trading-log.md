@@ -398,6 +398,139 @@ matches. With one confirmed name there is no cohort and no control group this ru
 seed for the insider-buy rule, resolving post-wrap by design. Zero-confirmed on the other two rules
 is itself a loggable outcome, not a failed run.
 
+### 2026-07-31 — Check-in 3 (week 3) — **first resolutions**
+
+**Money book (secondary metric):**
+
+| Ticker | Entry | Current | Value | P&L $ | P&L % |
+|--------|-------|---------|-------|-------|-------|
+| BHP | $58.28 | $60.31 | $5,174.16 | $174.16 | +3.5% |
+| CSL | $122.89 | $123.06 | $5,006.92 | $6.92 | +0.1% |
+| QBE | $25.47 | $24.73 | $3,883.78 | $-116.22 | -2.9% |
+| VSL | $4.70 | $5.25 | $3,909.57 | $409.57 | +11.7% |
+| DRO | $2.29 | $1.70 | $1,850.44 | $-649.56 | -26.0% |
+
+- **Book:** $19,824.87 (−0.9%) vs **benchmark** all-VAS $20,362.97 (+1.8%) → picks **lagging by 2.7 pts**,
+  widened from 0.7 pts at check-in 2. DRO (−26%) is the drag; VSL (+11.7%) still the only real winner.
+  The gap widening while the index rises is the expected shape of "no stock-picking edge."
+
+**Two grader defects found and fixed — both latent until something actually came due.**
+
+1. **`score.py` crashed on a read-only run.** The provenance table read `outcome` back off the ledger
+   dict, but a newly-due directional entry is graded *in memory* and only written under `--resolve`.
+   So the first time anything resolved, the command documented as "safe to run any time" died with a
+   `TypeError`. Fixed by carrying `(entry, outcome)` pairs through to the reporting layer.
+2. **Grading used the price on the day the check-in was RUN, not the close on `resolve_date`.**
+   `prices.py` had no historical lookup at all. NST's rule pre-registers the window
+   `[2026-07-18, 2026-07-29]`, but running this check-in on the 31st silently measured a two-day-longer
+   window. Added `get_close_on()` (last session on or before `resolve_date`) and switched grading to it;
+   `--resolve` now also writes a `graded_on` audit block recording which session priced the grade.
+
+   **Verified outcome-neutral before adoption** — both entries resolving today grade identically either
+   way (NST 0, VAS 1), so the fix cannot be a grader tuned to flatter the score. Done now because the
+   exposure is concentrated: **14 of the 15 live directional entries resolve on 2026-08-26, the wrap date
+   itself.** Running the wrap even one day late would have mis-windowed every one of them.
+
+**Resolved this check-in — 5 entries (first directional resolutions in the experiment):**
+
+| ID | P | Outcome | Basis |
+|----|---|---------|-------|
+| `nst-underperform` | 0.60 | **FALSE** | NST +7.59% vs VAS +2.66% at the 29 Jul close — it *out*performed |
+| `vas-positive-to-30jul` | 0.54 | **TRUE** | VAS +1.84% at the 30 Jul close |
+| `fomc-holds-29jul` | 0.62 | **TRUE** | Fed held 3.50–3.75%, 9–3, three dissents wanting a *hike* |
+| `nst-reports-29jul` | 0.95 | **TRUE** | NST quarterly PDF cover page, 29 July 2026 |
+| `rio-reports-29jul` | 0.93 | **TRUE** | Rio's own investor page, "Announced on Wednesday 29 July 2026" |
+
+- **Directional Brier 0.2858 (n=2)** — worse than the 0.25 coin-flip baseline. This is the
+  pre-committed expected result, arriving on schedule.
+- **Factual Brier 0.0404, accuracy 100% (n=4).**
+- Calibration table: 0.9–1.0 band now 3/3 at mean P 0.93; 0.6–0.7 band 1/2 at mean 0.61.
+
+**Resolution notes worth keeping:**
+
+- **NST was wrong on mechanism as well as direction.** The thesis was "gold momentum reversing." The
+  research sweep found NST's July strength was an *oversold operational bounce* — the stock had cut FY26
+  guidance twice and fallen ~40% in three months on KCGM execution problems, then beat an already-lowered
+  bar on 29 Jul. NST is a noisy proxy for gold sentiment because it carries its own idiosyncratic story.
+- **RIO is TRUE only on the ASX-facing date.** The release was a single simultaneous global event at
+  ~22:30 UTC — 29 Jul in Sydney, **28 Jul in London**. An LSE/RNS-framed reading of the identical event
+  resolves this FALSE. The rule's wording selects the ASX framing, so TRUE stands, but future
+  dual-listed reporting-date claims must name the exchange and timezone.
+- **FOMC carried a retrieval flag, chased down rather than waved through.** The verifying sweep found the
+  July press-release *index* page didn't list the statement. Re-checked independently against the
+  official FOMC calendar, which links the 29 Jul statement HTML, PDF, implementation note and press
+  conference. Index omission was a summariser artifact, not a missing document.
+
+**Research sweep (4 parallel Sonnet subagents): primary-sourced findings**
+
+- **Q2 CPI (ABS, primary):** headline **+3.8%** y/y, trimmed mean **+3.6%** — still above the 2–3% band.
+  Cash rate **4.35%**, unchanged since 17 Jun. Post-print an Aug hike is priced ~4% and **Westpac withdrew
+  its last-standing hike call**. ⚠️ **rba.gov.au 403s automated fetch** (same as ato.gov.au) — rate level
+  came via proxy plus cross-check, not a clean primary read. Westpac's own note quotes headline CPI as
+  3.9% against the ABS's 3.8%; ABS is primary.
+- **Reporting dates confirmed from company calendars:** RMD 6 Aug (US), CBA 12 Aug, SUN 12 Aug,
+  TLS 13 Aug, TCL 13 Aug, CSL 18 Aug, FMG 20 Aug, WOW 26 Aug.
+- ⚠️ **An aggregator claimed Telstra reports 20 Aug; Telstra's own key-dates page says 13 Aug.** The
+  "primary beats snippet" rule earned its keep again this run.
+- **CSL:** CHMP recommended **revoking** the TAVNEOS EU marketing authorisation on 25 Jun 2026 over
+  ADVOCATE data-integrity concerns. **EC decision still pending with no published date** — a live
+  unresolved overhang into the 18 Aug result.
+- **DRO:** the 28 Jul HY26 update cut FY26 revenue guidance to **$250–270m vs ~$328m consensus**, gross
+  margin 60% vs 65% — the mechanism behind the −21% move. ASIC matter still open.
+- **WBT:** the ~26% fall followed a guidance *upgrade* (20 Jul, FY26 revenue to ≥A$13.5m). Post-rally
+  profit-taking and doubts about revenue quality, not a broken thesis. Its FY26 result (28 Aug) lands
+  *after* resolution, so no catalyst can rescue the call.
+- **Prices: our own feed was vindicated.** Aggregators quoted VSL anywhere from $5.25 to $7.16; `quote.py`'s
+  $5.25 matched the only correctly-dated source. Several "current" GNC/VSL articles were 2023–25 vintage
+  resurfaced with recent-looking wrappers.
+- **No live prediction was changed by the sweep.**
+
+**Pre-registered this check-in (5, before any outcome known) — spread 0.56–0.94:**
+
+| ID | Claim | P | Resolves | Why this probability |
+|----|-------|---|----------|----------------------|
+| `rmd-reports-6aug` | ResMed Q4 FY26 on 6 Aug (US) | 0.94 | 08-08 | company press release, read directly |
+| `fmg-reports-20aug` | Fortescue FY26 on 20 Aug | 0.85 | 08-21 | **primary says 20 Aug, aggregators say 24 Aug** |
+| `dro-reports-26aug` | DroneShield H1 on 26 Aug | 0.72 | 08-27 | **no primary exists**; convergent aggregators only |
+| `tavneos-ec-pending-26aug` | No EC decision on TAVNEOS by 26 Aug | 0.62 | 08-26 | ~67-day norm lands ~31 Aug, just outside |
+| `vas-positive-to-14aug` | VAS positive 31 Jul → 14 Aug | 0.56 | 08-14 | non-overlapping base rate 55.3% |
+
+Chosen deliberately to fill the **empty 0.7–0.8 and 0.8–0.9 bands** rather than pad the 0.9 band with
+another calendar read. See the FINDINGS note on the factual track being too easy. New entries share
+`cluster: "reporting-dates"` so they discount against each other.
+
+Provenance: **`claude-opus-5[1m]`** / `claude-code-main` — note the model changed from
+`claude-opus-4-8[1m]` used at check-ins 1–2.
+
+**Precursor screen:** run across all three live rules. 83 names screened (SVW skipped — delisted).
+The quant leg shortlisted 50 after the research budget (governance 15 of 34 matched, 19 dropped and
+listed by name; insider-buy 10; preupgraded 25). Each name's news condition was verified by targeted
+sweep (4 parallel Sonnet subagents). **Result: 4 of 50 confirmed.**
+
+- **`governance-overhang` → 2 confirmed: DRO, WTC** (both legs primary-checked). First time this rule
+  has produced any match. DRO: ASIC investigation of 12 May still open + defence/counter-drone sector
+  rally. WTC: AFP investigation and ASIC probe into ~A$229m of chair share trading + ASX IT sector rally.
+- **`preupgraded-guidance` → 2 confirmed: CPU, MIN.** Both had two dated *company-issued* upgrades.
+  **Direction FLIPPED from the stub default** — the rule hypothesises these names *beat* VAS, but
+  `screen.py` emits every stub as "underperforms"; registering as emitted would test the rule backwards.
+- **`insider-buy-after-warning` → 0 confirmed.** Two instructive near-misses: ARB has a genuine on-market
+  director purchase (16 Jun) but its profit warning was January, outside the 45-day window; DRO has a real
+  guidance cut (28 Jul) but no director purchase in the three days since.
+- Rejections were strict and are the point: Harvey Norman's ASIC matter was **resolved** by judgment on
+  28 Jul, so it fails "unresolved"; "reaffirmed", "narrowed", "guided to the top end" and results
+  *beating* prior guidance were all rejected as non-upgrades.
+- **DRO cluster choice, stated openly:** tagged `defence`, not `governance`. It is nearly the same bet as
+  the live `dro-underperform` call — same stock, same direction, overlapping window — and that
+  correlation is far stronger than its link to WTC via the rule. Tagging `defence` makes `score.py`
+  discount it against the existing DRO entries, lowering effective n. The conservative choice, taken at
+  the cost of the tag-by-rule convention.
+
+**Multiple-comparisons count: 246 name×rule tests this run** (82 names × 3 rules). ⚠️ **This corrects the
+record: check-in 2 logged "51 name×rule comparisons", but 51 was the count of quant MATCHES (15+15+21),
+not tests performed.** `screen.py` computes `tests += len(rows)` per rule and has not changed since
+19 Jul, so that run's true exposure was also ~246. The earlier figure understated multiple-comparisons
+risk by ~5×.
+
 <!-- Template for future entries:
 ### YYYY-MM-DD — Check-in N
 | Ticker | Entry | Current | Value | P&L $ | P&L % |
