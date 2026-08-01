@@ -65,6 +65,52 @@ NST had cut FY26 guidance twice and fallen ~40% in three months on KCGM executio
 already-lowered bar on 29 Jul. The stock moved on its own operational story, not on gold. A confident
 narrative about a sector was applied to a stock whose price was being driven by something else entirely.
 
+### 🚫 Date-of-disclosure claims were not predictions at all — retired 2026-08-01
+
+The sharper version of the "too easy" problem below, and it needed a stronger remedy than shading
+probabilities. **"Company X releases its results on date Y" is not a forecast — it is a compliance
+event.** ASX Listing Rule 4.3A obliges a 30-June-balance-date company to lodge within two months, the
+company publishes the date itself, and the base rate is >97%. The claim tests whether the system can
+read a calendar.
+
+**It was also actively corrupting the measurement, not merely diluting it.** Stack near-certainties into
+the 0.9 band and it reads ~100% actual against ~0.93 predicted — an apparent "under-confident at the
+top" finding manufactured entirely by question selection. That is a false result. **69% of the factual
+track (9 of 13 entries) was this**, with four more at P ≥ 0.80 queued to land in the upper bands.
+
+**Remedy.** All nine are tagged `"scoring": "compliance"`, still graded and reported, but **excluded from
+the factual Brier and the calibration table** — the same treatment the eight grandfathered watch-calls
+received. `CHECKIN.md` now forbids registering more.
+
+**The honesty test this had to pass:** both already-resolved compliance entries resolved TRUE at P 0.95
+and P 0.93. Removing them makes the record **worse**, not better — the factual Brier went **0.0404 →
+0.0772** and the 0.9–1.0 band collapsed from n=3 to n=1. A reclassification that costs the score is not
+motivated reasoning. The rule was applied uniformly to every date-of-disclosure claim without reference
+to outcome.
+
+### ✅ What replaced them: measured results-day reaction claims
+
+The valuable question is not *when* a report lands but **what it does to the price** — which no source
+states in advance. Eight `event-move` entries were registered 2026-08-01 against the confirmed August
+reporting dates, asking whether each stock moves more than a threshold on its results day, graded
+mechanically from price with no source check and no self-grading.
+
+**Every probability is anchored to a computed figure.** Over 5 years of daily closes, two things were
+measured per name: the unconditional frequency of exceeding the threshold, and a proxy for results-day
+moves (the largest single-day move in each of 10 Feb/Aug reporting windows). The proxy is an **upper
+bound** — the window max is usually but not always the result itself — so every registered probability
+is shaded *down* from it.
+
+A first attempt measured only a **×1.39** "in-season" elevation and was discarded as misleading: a 21-day
+window contains ~1 results day, so the effect is diluted roughly 20:1. Measuring the event directly gives
+a far larger elevation — e.g. WOW moves >2% on just **4.6%** of ordinary days but on **80%** of proxy
+results days.
+
+The batch spans P 0.58–0.85 and lands **1 / 3 / 2 / 2** across the 0.5–0.6, 0.6–0.7, 0.7–0.8 and 0.8–0.9
+bands — filling the two that were empty, with genuinely uncertain claims rather than calendar reads.
+**Deliberately nothing above 0.9**: the data does not support a near-certain move at any threshold worth
+asking about, and inventing one would repeat the exact mistake being corrected.
+
 ### ⚠️ The factual track is currently too easy — the Brier flatters it
 
 The factual Brier of 0.0404 at 100% accuracy should **not** be read as evidence of forecasting skill.
@@ -117,12 +163,17 @@ standard — e.g. "no closure announcement on the official record as at DATE."
 
 ## Measured: how much independent information the ledger actually holds
 
-*Added 2026-08-01. This began as a suspicion that the design was near-worthless, and the measurement
-refuted it. Recorded in full because the refutation is the useful part.*
+*Added 2026-08-01.*
 
-**The suspicion.** 13 of 16 directional entries resolve on a single day (2026-08-26), 12 of them share
-an identical start date, an identical end date and the same benchmark. That looks like one market-window
-bet sliced twelve ways, which would mean the honest effective n was ~2 and the wrap could say nothing.
+**Finding: the directional ledger carries close to its full nominal sample.** 13 of 16 directional
+entries resolve on a single day (2026-08-26), and 12 share an identical start date, end date and
+benchmark — a structure that looks alarmingly redundant. It measures as almost entirely independent, and
+the reason is structural rather than lucky: a *relative* claim carries the benchmark on both sides, so
+the common market factor cancels out of the quantity actually being predicted.
+
+*(This was measured because the shared-window structure prompted a concern that effective n might be as
+low as ~2. The data did not support that. The concern is recorded because the check changed the scorer —
+see below — not because the worry was correct.)*
 
 **The measurement.** 508 sessions of daily ASX data to 2026-07-31, 15 names, 105 pairs:
 
@@ -269,6 +320,8 @@ made at this wrap**, whatever the numbers look like — see the README section o
 | 2026-07-31 | **Grading now uses the close ON `resolve_date`, not the price on the day the check-in is run.** Added `prices.get_close_on()` (last session on or before `resolve_date`); `--resolve` additionally writes a `graded_on` block recording the session used, the subject return and the bar. | **This was a silent rule violation, not a rounding error.** `prices.py` had no historical lookup at all, so a check-in run late measured a longer window than the rule pre-registered. NST's rule specifies `[2026-07-18, 2026-07-29]`; grading it on 31 Jul prices measured 13 days, not 11. **Verified outcome-neutral before adoption** — both entries due today grade identically old and new (NST 0, VAS 1), so this cannot be a grader retro-fitted to flatter the score, and that verification is *why* it was done today rather than later. The exposure is concentrated: **14 of 15 live directional entries resolve on 2026-08-26, which is the wrap date itself** — running the wrap one day late would have mis-windowed every one of them. |
 | 2026-07-31 | **Guard added for probabilities below 0.5.** The calibration bands start at 0.5, so a P < 0.5 entry would count in the Brier score but appear in no band. `score.py` now prints a loud warning naming any such entry. Convention restated: phrase claims so P ≥ 0.5, stating the complement where needed. | Found while drafting a genuinely-uncertain entry that naturally wanted P ≈ 0.4. Nothing had breached it yet, so this is a fix made *before* the failure rather than after — the cheap case. Also drove the wording of `tavneos-ec-pending-26aug`, phrased as a positive read of a published status field rather than an argument from absence, which is the flaw already logged against the `dro-asic-live` rule. |
 | 2026-07-31 | **Precursor cluster tagged by correlation, not by rule, for one entry.** `dro-governance-overhang…` is tagged `cluster: "defence"` rather than `"governance"`. | It is nearly the same bet as the live `dro-underperform` call — same stock, same direction, overlapping window — and that same-stock correlation is far stronger than its link to the other cohort member (WTC) through the rule. Tagging `defence` makes `score.py` discount it against the existing DRO entries, **lowering** effective n. The conservative choice, taken at the cost of the tag-by-rule convention, and recorded here because it is a deviation. **Related observation, uncorrectable:** the six existing reporting-date factual entries are all tagged `cluster: "independent"`, which counts them at full weight. They are independent *events*, but the *errors* are highly correlated — same question type, same evidence source, same failure mode if published calendars turn out unreliable. Those tags are pre-registered and stand; new reporting-date entries share `cluster: "reporting-dates"` instead. Effective n on the factual track is therefore **overstated** for the earlier entries. |
-| 2026-08-01 | **`effective_n` rewritten: correlation is now MEASURED, and keyed on ticker × window overlap rather than on sector tag.** Old model: same-cluster ⇒ ρ=0.7, everything else ⇒ 0. New model: `n_eff = n²/Σρᵢⱼ`, with same-ticker ⇒ 0.85 and same-cluster ⇒ 0.40, both scaled by the fraction of the shorter measurement window the pair shares; differentiated by track (factual pairs correlate by method, not ticker; cross-track same-subject pairs get the cluster rho as an unmeasured conservative middle). | The old ρ=0.7 was an admitted guess and the data contradicts it: measured correlation of the *outcome being predicted* across names is **−0.020**, because the benchmark leg cancels the market factor in a relative claim. So the old model over-penalised the cross-sectional book while giving a **zero** discount to genuinely near-duplicate pairs that happened to carry different tags — the two live CSL price calls were being counted as fully independent. Net effect on the live ledger: raw 34 → effective 21.1. **This began as my own claim that the design was near-worthless; the measurement refuted it, and the refutation is recorded above rather than quietly dropped.** ⚠️ Note this is a scoring-method change made mid-experiment; it alters no `prob`, no `outcome` and no pre-registered field, only the *reported* effective n. |
+| 2026-08-01 | **`effective_n` rewritten: correlation is now MEASURED, and keyed on ticker × window overlap rather than on sector tag.** Old model: same-cluster ⇒ ρ=0.7, everything else ⇒ 0. New model: `n_eff = n²/Σρᵢⱼ`, with same-ticker ⇒ 0.85 and same-cluster ⇒ 0.40, both scaled by the fraction of the shorter measurement window the pair shares; differentiated by track (factual pairs correlate by method, not ticker; cross-track same-subject pairs get the cluster rho as an unmeasured conservative middle). | The old ρ=0.7 was an admitted guess and the data contradicts it: measured correlation of the *outcome being predicted* across names is **−0.020**, because the benchmark leg cancels the market factor in a relative claim. So the old model over-penalised the cross-sectional book while giving a **zero** discount to genuinely near-duplicate pairs that happened to carry different tags — the two live CSL price calls were being counted as fully independent. Net effect on the live ledger: raw 34 → effective 21.1. **Prompted by a concern that the shared-window structure had collapsed effective n to ~2; the measurement did not support that, and the estimator was rewritten anyway because the check exposed the same-ticker blind spot.** ⚠️ Note this is a scoring-method change made mid-experiment; it alters no `prob`, no `outcome` and no pre-registered field, only the *reported* effective n. |
+| 2026-08-01 | **Date-of-disclosure claims retired from calibration.** The 9 "company X reports on date Y" entries are tagged `"scoring": "compliance"`, still graded but excluded from the factual Brier and the calibration table; `CHECKIN.md` forbids new ones. Replaced by `basis: "event-move"` entries — results-day price-reaction claims graded mechanically against a `ref_date` close. | **These were never predictions.** ASX LR 4.3A obliges lodgement within two months of a 30-June balance date and the company publishes the date itself, so the base rate is >97%; the claim tested calendar-reading. Worse, stacked into the 0.9 band they would have manufactured a false "under-confident at the top" result out of question selection alone — 69% of the factual track was this. **The reclassification is self-penalising and that is the check that it is honest:** both resolved compliance entries were TRUE at P 0.95/0.93, so removing them moved the factual Brier from 0.0404 to **0.0772** and cut the 0.9 band from n=3 to n=1. Rule applied uniformly, without reference to outcome. *(Raised by Matt, who pointed out that a company meeting a legally-mandated deadline it announced itself is "things going as expected", not a forecast — and that the valuable question is what is IN the report and whether it moves the price.)* |
+| 2026-08-01 | **New schema: `basis: "event-move"` with `ref_date`.** The reference price is the close on a pre-registered future date rather than one stamped at logging; outcome is `abs(return) > threshold_pct` from that close to the `resolve_date` close. `_window()` uses `[ref_date, resolve_date]` for these. | Measuring a *reaction* requires a reference from the session before the event, which only became possible once `get_close_on()` existed. Still tamper-proof: the date is fixed in advance and the close is a public mechanical number, so nothing is selected after the fact. The `_window` change matters for correlation — using `logged` would have made eight different companies' results days look like one overlapping blob and collapsed them to ~1 effective observation; with ref_date windows, same-day pairs correlate at 0.40 and different-day pairs at 0.00, giving effective n 6.67 from 8 raw. Verified on a scratch ledger against known closes: NST moved +2.222% from 28→29 Jul, grading TRUE against a 2% threshold and FALSE against 3%, with a future-dated entry correctly left ungraded. |
 | 2026-08-01 | **The small-sample caveat is now unconditional, and per-band n is reported alongside it.** | It previously printed only while effective n was below 20 — meaning the warning that protects every reading of these numbers would **switch itself off exactly as the sample grew**, and the live ledger is now at 21.1. Crossing ~20 does not make a calibration curve readable; it only stops it being hopeless. The per-band thresholds (≈21 gross / ≈62 moderate / ≈97 subtle) are now printed every run so a band with n=3 cannot be mistaken for evidence. |
 | 2026-07-31 | **Provenance model changed:** entries logged from this check-in carry `claude-opus-5[1m]`; check-ins 1–2 carry `claude-opus-4-8[1m]`. | Recorded because the provenance table now spans two models mid-experiment. This changes nothing about the standing pre-commitment: **no model-comparison claim will be made at the wrap.** Per-cell n is in the low single digits, the split is confounded with time and with question type, and a flattering cut will always be available. The field exists for description only. |

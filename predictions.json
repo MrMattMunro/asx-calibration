@@ -180,7 +180,9 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-18"
-      }
+      },
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-18-qbe-reports-14aug",
@@ -205,7 +207,9 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-18"
-      }
+      },
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-18-rba-holds-11aug",
@@ -544,7 +548,9 @@
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
       },
-      "resolution_note": "TRUE. Primary PDF cover page verbatim: 'ASX Announcement: NST / 29 July 2026 / Quarterly Report / June 2026'. WebFetch's extractor reported the PDF as password-protected (owner flag); text was obtained by running poppler pdftotext over the file directly, so this is a primary-source read rather than a search snippet."
+      "resolution_note": "TRUE. Primary PDF cover page verbatim: 'ASX Announcement: NST / 29 July 2026 / Quarterly Report / June 2026'. WebFetch's extractor reported the PDF as password-protected (owner flag); text was obtained by running poppler pdftotext over the file directly, so this is a primary-source read rather than a search snippet.",
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-26-rio-reports-29jul",
@@ -570,7 +576,9 @@
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
       },
-      "resolution_note": "TRUE on the ASX-facing date, which is what the rule asks. Rio Tinto's own investor page states '2026 half year results - Announced on Wednesday 29 July 2026', confirmed twice across the invest and results pages. DUAL-LISTING NUANCE, recorded because it could have gone the other way: the release was a single simultaneous global event at ~22:30 UTC, which is 29 Jul in Sydney but 28 Jul in London. An LSE/RNS-framed reading of the same event would date it 28 Jul and resolve this FALSE. The rule's wording ('an ASX announcement or Rio Tinto's investor page') selects the ASX/company framing, so TRUE. Not cross-checked against a raw ASX announcement PDF or SEC 6-K: asx.com.au is JS-rendered and EDGAR returned 403. LESSON: future dual-listed reporting-date claims should name the exchange and timezone explicitly."
+      "resolution_note": "TRUE on the ASX-facing date, which is what the rule asks. Rio Tinto's own investor page states '2026 half year results - Announced on Wednesday 29 July 2026', confirmed twice across the invest and results pages. DUAL-LISTING NUANCE, recorded because it could have gone the other way: the release was a single simultaneous global event at ~22:30 UTC, which is 29 Jul in Sydney but 28 Jul in London. An LSE/RNS-framed reading of the same event would date it 28 Jul and resolve this FALSE. The rule's wording ('an ASX announcement or Rio Tinto's investor page') selects the ASX/company framing, so TRUE. Not cross-checked against a raw ASX announcement PDF or SEC 6-K: asx.com.au is JS-rendered and EDGAR returned 403. LESSON: future dual-listed reporting-date claims should name the exchange and timezone explicitly.",
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-26-iag-reports-13aug",
@@ -595,7 +603,9 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
-      }
+      },
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-26-bhp-reports-18aug",
@@ -620,7 +630,9 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-26"
-      }
+      },
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-26-csl-insider-buy-after-warning",
@@ -669,7 +681,9 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-31"
-      }
+      },
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-31-fmg-reports-20aug",
@@ -692,7 +706,9 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-31"
-      }
+      },
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-31-dro-reports-26aug",
@@ -715,7 +731,9 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "news-sweep-2026-07-31"
-      }
+      },
+      "scoring": "compliance",
+      "scoring_note": "Reclassified 2026-08-01. The claim is about WHEN a routine, legally-mandated disclosure occurs - not its content or its effect. ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company publishes the date itself, so the base rate is >97% and the claim tests calendar-reading, not forecasting. Excluded from the calibration curve and the factual Brier; still graded and reported in its own track. Rule applied uniformly to every date-of-disclosure claim, with no reference to outcome."
     },
     {
       "id": "2026-07-31-tavneos-ec-pending-26aug",
@@ -869,6 +887,230 @@
         "effort": "default",
         "web_search": true,
         "generated_by": "precursor-screen-2026-07-31"
+      }
+    },
+    {
+      "id": "2026-08-01-rmd-results-move-0807",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "RMD",
+      "basis": "event-move",
+      "claim": "RMD moves more than 2.0% in absolute terms on its results day 2026-08-07",
+      "prob": 0.85,
+      "resolution": "price: abs(RMD.AX price-return) > 2.0% measured from the close on ref_date 2026-08-06 to the close on 2026-08-07. Graded mechanically; no source check.",
+      "ref_date": "2026-08-06",
+      "resolve_date": "2026-08-07",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 2.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "Q4 FY26; highest baseline vol of the batch. Unconditional P(|move|>2.0%) = 20.8%; proxy results-day P(|move|>2.0%) = 100% over 10 reporting windows. Registered at 0.85, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
+      }
+    },
+    {
+      "id": "2026-08-01-sun-results-move-0812",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "SUN",
+      "basis": "event-move",
+      "claim": "SUN moves more than 2.0% in absolute terms on its results day 2026-08-12",
+      "prob": 0.78,
+      "resolution": "price: abs(SUN.AX price-return) > 2.0% measured from the close on ref_date 2026-08-11 to the close on 2026-08-12. Graded mechanically; no source check.",
+      "ref_date": "2026-08-11",
+      "resolve_date": "2026-08-12",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 2.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "FY26; one window max was 19.4%, so the tail is fat. Unconditional P(|move|>2.0%) = 10.4%; proxy results-day P(|move|>2.0%) = 90% over 10 reporting windows. Registered at 0.78, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
+      }
+    },
+    {
+      "id": "2026-08-01-cba-results-move-0812",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "CBA",
+      "basis": "event-move",
+      "claim": "CBA moves more than 2.0% in absolute terms on its results day 2026-08-12",
+      "prob": 0.68,
+      "resolution": "price: abs(CBA.AX price-return) > 2.0% measured from the close on ref_date 2026-08-11 to the close on 2026-08-12. Graded mechanically; no source check.",
+      "ref_date": "2026-08-11",
+      "resolve_date": "2026-08-12",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 2.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "FY26; lowest-vol megacap, but results days move it. Unconditional P(|move|>2.0%) = 9.7%; proxy results-day P(|move|>2.0%) = 80% over 10 reporting windows. Registered at 0.68, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
+      }
+    },
+    {
+      "id": "2026-08-01-tls-results-move-0813",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "TLS",
+      "basis": "event-move",
+      "claim": "TLS moves more than 2.0% in absolute terms on its results day 2026-08-13",
+      "prob": 0.65,
+      "resolution": "price: abs(TLS.AX price-return) > 2.0% measured from the close on ref_date 2026-08-12 to the close on 2026-08-13. Graded mechanically; no source check.",
+      "ref_date": "2026-08-12",
+      "resolve_date": "2026-08-13",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 2.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "FY26; very low baseline vol (median |move| 0.50%). Unconditional P(|move|>2.0%) = 4.1%; proxy results-day P(|move|>2.0%) = 80% over 10 reporting windows. Registered at 0.65, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
+      }
+    },
+    {
+      "id": "2026-08-01-tcl-results-move-0813",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "TCL",
+      "basis": "event-move",
+      "claim": "TCL moves more than 2.0% in absolute terms on its results day 2026-08-13",
+      "prob": 0.58,
+      "resolution": "price: abs(TCL.AX price-return) > 2.0% measured from the close on ref_date 2026-08-12 to the close on 2026-08-13. Graded mechanically; no source check.",
+      "ref_date": "2026-08-12",
+      "resolve_date": "2026-08-13",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 2.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "FY26; lowest proxy hit-rate in the batch. Unconditional P(|move|>2.0%) = 4.7%; proxy results-day P(|move|>2.0%) = 70% over 10 reporting windows. Registered at 0.58, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
+      }
+    },
+    {
+      "id": "2026-08-01-csl-results-move-0818",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "CSL",
+      "basis": "event-move",
+      "claim": "CSL moves more than 3.0% in absolute terms on its results day 2026-08-18",
+      "prob": 0.72,
+      "resolution": "price: abs(CSL.AX price-return) > 3.0% measured from the close on ref_date 2026-08-17 to the close on 2026-08-18. Graded mechanically; no source check.",
+      "ref_date": "2026-08-17",
+      "resolve_date": "2026-08-18",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 3.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "FY26 with the TAVNEOS revocation overhang unresolved. Unconditional P(|move|>3.0%) = 4.2%; proxy results-day P(|move|>3.0%) = 80% over 10 reporting windows. Registered at 0.72, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
+      }
+    },
+    {
+      "id": "2026-08-01-fmg-results-move-0820",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "FMG",
+      "basis": "event-move",
+      "claim": "FMG moves more than 3.0% in absolute terms on its results day 2026-08-20",
+      "prob": 0.85,
+      "resolution": "price: abs(FMG.AX price-return) > 3.0% measured from the close on ref_date 2026-08-19 to the close on 2026-08-20. Graded mechanically; no source check.",
+      "ref_date": "2026-08-19",
+      "resolve_date": "2026-08-20",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 3.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "FY26; most volatile name here (median |move| 1.21%). Unconditional P(|move|>3.0%) = 12.1%; proxy results-day P(|move|>3.0%) = 100% over 10 reporting windows. Registered at 0.85, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
+      }
+    },
+    {
+      "id": "2026-08-01-wow-results-move-0826",
+      "logged": "2026-08-01",
+      "type": "directional",
+      "ticker": "WOW",
+      "basis": "event-move",
+      "claim": "WOW moves more than 2.0% in absolute terms on its results day 2026-08-26",
+      "prob": 0.66,
+      "resolution": "price: abs(WOW.AX price-return) > 2.0% measured from the close on ref_date 2026-08-25 to the close on 2026-08-26. Graded mechanically; no source check.",
+      "ref_date": "2026-08-25",
+      "resolve_date": "2026-08-26",
+      "ref_price": null,
+      "bm_ref": null,
+      "threshold_pct": 2.0,
+      "cluster": "results-reaction",
+      "method": "measured-base-rate",
+      "rationale": "FY26; low baseline vol but two >12% window maxes. Unconditional P(|move|>2.0%) = 4.6%; proxy results-day P(|move|>2.0%) = 80% over 10 reporting windows. Registered at 0.66, shaded below the proxy. ANCHORED TO MEASURED DATA, not judgement. Two figures were computed over 5 years of daily closes: (a) the UNCONDITIONAL frequency of a daily move exceeding the threshold, and (b) a PROXY for results-day moves - the largest single-day move inside each Feb/Aug reporting window, n=10 windows per name. The proxy is an upper bound, because the window max is usually but not always the result itself, so the registered probability is shaded DOWN from it. A naive 'in-season' measurement gave only a x1.39 elevation, but that is diluted ~20:1 by the 20 non-event days in each window and was discarded as misleading. Results date confirmed from the company's own investor calendar. NOTE this replaces the retired date-of-disclosure claims: the DATE is now merely the trigger, and the prediction is about the market's REACTION, which no source states in advance.",
+      "outcome": null,
+      "resolved_on": null,
+      "source": null,
+      "provenance": {
+        "model": "claude-opus-5[1m]",
+        "surface": "claude-code-main",
+        "effort": "default",
+        "web_search": true,
+        "generated_by": "results-reaction-batch-2026-08-01"
       }
     }
   ]

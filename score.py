@@ -87,9 +87,17 @@ def brier(items: list[tuple[float, int]]) -> float | None:
 
 
 def _window(e: dict) -> tuple[date, date] | None:
-    """The measurement window [logged, resolve_date], if both are present."""
+    """The measurement window, if it can be determined.
+
+    Normally [logged, resolve_date]. For an event-move entry it is
+    [ref_date, resolve_date] - a single session - because that is the span the
+    outcome actually depends on. Using `logged` there would make eight different
+    companies' results days look like one heavily-overlapping blob and wrongly
+    collapse them into a single effective observation.
+    """
     try:
-        return parse_date(e["logged"]), parse_date(e["resolve_date"])
+        start = parse_date(e.get("ref_date") or e["logged"])
+        return start, parse_date(e["resolve_date"])
     except Exception:
         return None
 
@@ -230,6 +238,7 @@ def main() -> None:
     # would hit None on a read-only run.
     graded: list[tuple[dict, int]] = []
     provisional: list[tuple[dict, float, float, bool]] = []
+    not_started: list[dict] = []
     held: list[tuple[dict, str]] = []
     resolved_writes = 0
 
@@ -245,16 +254,42 @@ def main() -> None:
         # Pre-registration completeness is a hard gate. Absolute-basis entries
         # (the subject IS the benchmark, so a relative comparison is degenerate)
         # need ref_price and threshold_pct instead of bm_ref.
-        absolute = e.get("basis") == "absolute"
-        if absolute:
+        basis = e.get("basis")
+        absolute = basis == "absolute"
+        event = basis == "event-move"
+
+        # An event-move entry measures the reaction ACROSS a single event, so its
+        # reference is the close on a pre-registered `ref_date` (the session
+        # before the event) rather than a price stamped at logging time. That is
+        # still tamper-proof: the date is fixed in advance and the close is a
+        # public, mechanical number, so nothing is chosen after the fact.
+        ref_px: float | None
+        if event:
+            if not e.get("ref_date") or e.get("threshold_pct") is None:
+                held.append(
+                    (e, "incomplete pre-registration (event-move needs ref_date + threshold_pct)")
+                )
+                continue
+            rdate = parse_date(e["ref_date"])
+            if now <= rdate:
+                not_started.append(e)
+                continue
+            ref_px, _ = get_close_on(e["ticker"], rdate)
+            if ref_px is None:
+                held.append((e, f"no close on/before ref_date {e['ref_date']}"))
+                continue
+        elif absolute:
             if e.get("ref_price") in (None, 0) or e.get("threshold_pct") is None:
                 held.append(
                     (e, "incomplete pre-registration (missing ref_price or threshold_pct)")
                 )
                 continue
-        elif e.get("ref_price") in (None, 0) or e.get("bm_ref") in (None, 0):
-            held.append((e, "incomplete pre-registration (missing ref_price or bm_ref)"))
-            continue
+            ref_px = e["ref_price"]
+        else:
+            if e.get("ref_price") in (None, 0) or e.get("bm_ref") in (None, 0):
+                held.append((e, "incomplete pre-registration (missing ref_price or bm_ref)"))
+                continue
+            ref_px = e["ref_price"]
 
         q = quotes.get(e["ticker"])
         if q is None or q.price is None:
@@ -263,22 +298,27 @@ def main() -> None:
         if q.flags:
             held.append((e, f"integrity flag: {q.flag_str()}"))
             continue
-        if not absolute and (bm_q.price is None or bm_q.flags):
+        if not (absolute or event) and (bm_q.price is None or bm_q.flags):
             held.append((e, f"benchmark price unusable ({bm_q.flag_str()})"))
             continue
 
-        ret = (q.price / e["ref_price"] - 1) * 100
-        if absolute:
+        ret = (q.price / ref_px - 1) * 100
+        if event:
+            # Magnitude claim: did the price MOVE more than the threshold across
+            # the event, in either direction? Sign is deliberately ignored - the
+            # claim is about reaction size, not direction.
+            bm_ret = e["threshold_pct"]
+            truth = abs(ret) > bm_ret
+        elif absolute:
             # No benchmark leg: the claim is about the subject's own return
             # clearing a pre-registered threshold. Comparing the benchmark to
             # itself would make `beat` False by construction and silently
             # mis-grade every entry, so that path is never taken here.
             bm_ret = e["threshold_pct"]
-            beat = ret > bm_ret
+            truth = (ret > bm_ret) if claim_is_beat(e) else not (ret > bm_ret)
         else:
             bm_ret = (bm_q.price / e["bm_ref"] - 1) * 100
-            beat = ret > bm_ret
-        truth = beat if claim_is_beat(e) else (not beat)
+            truth = (ret > bm_ret) if claim_is_beat(e) else not (ret > bm_ret)
 
         if now >= parse_date(e["resolve_date"]):
             # Grade at the CLOSE ON resolve_date, not at today's price. Running a
@@ -290,9 +330,13 @@ def main() -> None:
             if px is None:
                 held.append((e, f"no close on/before resolve_date {e['resolve_date']}"))
                 continue
-            r_ret = (px / e["ref_price"] - 1) * 100
-            if absolute:
+            r_ret = (px / ref_px - 1) * 100
+            if event:
                 r_bm_ret = e["threshold_pct"]
+                r_truth = abs(r_ret) > r_bm_ret
+            elif absolute:
+                r_bm_ret = e["threshold_pct"]
+                r_truth = (r_ret > r_bm_ret) if claim_is_beat(e) else not (r_ret > r_bm_ret)
             else:
                 bpx, _ = get_close_on(bm_ticker, rd)
                 if bpx is None:
@@ -301,8 +345,7 @@ def main() -> None:
                     )
                     continue
                 r_bm_ret = (bpx / e["bm_ref"] - 1) * 100
-            r_beat = r_ret > r_bm_ret
-            r_truth = r_beat if claim_is_beat(e) else (not r_beat)
+                r_truth = (r_ret > r_bm_ret) if claim_is_beat(e) else not (r_ret > r_bm_ret)
             outcome = 1 if r_truth else 0
             final_dir.append((e["prob"], outcome))
             final_dir_entries.append(e)
@@ -322,13 +365,27 @@ def main() -> None:
             provisional.append((e, ret, bm_ret, truth))
 
     # --- Factual ----------------------------------------------------------
+    # Entries tagged scoring="compliance" are date-of-disclosure claims - "will
+    # company X lodge on the date it already published?". A 30-June-balance-date
+    # company is obliged by ASX LR 4.3A to lodge within two months and publishes
+    # the date itself, so these run at a >97% base rate and test calendar-reading,
+    # not forecasting. Left in the ledger and still graded, but scored in their
+    # OWN track: stacked into the 0.9 band they would manufacture a false
+    # "under-confident at the top" reading out of pure question selection.
     factual_scored: list[tuple[float, int]] = []
     factual_entries: list[dict] = []
     factual_pending: list[dict] = []
+    compliance_scored: list[tuple[float, int]] = []
+    compliance_pending: list[dict] = []
     for e in preds:
         if e["type"] != "factual":
             continue
-        if e.get("outcome") is not None and e.get("source"):
+        done = e.get("outcome") is not None and e.get("source")
+        if e.get("scoring") == "compliance":
+            (compliance_scored.append((e["prob"], int(e["outcome"]))) if done
+             else compliance_pending.append(e))
+            continue
+        if done:
             factual_scored.append((e["prob"], int(e["outcome"])))
             factual_entries.append(e)
             graded.append((e, int(e["outcome"])))
@@ -371,6 +428,30 @@ def main() -> None:
         acc = sum(o for _, o in factual_scored) / n
         eff = effective_n(factual_entries)
         out.append(f"- **Brier: {fb:.4f}** · accuracy {acc:.0%} (n={n}, ≈ effective n {eff:.1f})")
+    out.append("")
+
+    # --- Compliance track (reported, NOT part of calibration) -------------
+    out.append("#### Compliance track — reported separately, EXCLUDED from calibration")
+    out.append("")
+    out.append(
+        "> Date-of-disclosure claims: *\"will company X lodge on the date it already published?\"* "
+        "ASX LR 4.3A obliges a 30-June-balance-date company to lodge within two months and the company "
+        "publishes the date itself, so these run at a **>97% base rate**. They measure calendar-reading, "
+        "not forecasting, and stacked into the 0.9 band they would manufacture a false "
+        "\"under-confident at the top\" result out of question selection alone. Kept and graded for the "
+        "record; excluded from the factual Brier and the calibration table."
+    )
+    out.append("")
+    cb = brier(compliance_scored)
+    if cb is None:
+        out.append(f"- None resolved yet ({len(compliance_pending)} live).")
+    else:
+        n = len(compliance_scored)
+        acc = sum(o for _, o in compliance_scored) / n
+        out.append(
+            f"- Brier {cb:.4f} · accuracy {acc:.0%} (n={n}, {len(compliance_pending)} live). "
+            f"A low number here is expected and means little."
+        )
     out.append("")
 
     # --- Calibration table ------------------------------------------------
@@ -444,12 +525,28 @@ def main() -> None:
         out.append("| ID | Claim | P | Move | Bar (VAS or threshold) | On track? | Resolves |")
         out.append("|----|-------|---|------|------------------------|-----------|----------|")
         for e, ret, bm_ret, truth in provisional:
-            bar = f"{fmt_pct(bm_ret)} (abs)" if e.get("basis") == "absolute" else fmt_pct(bm_ret)
+            b = e.get("basis")
+            if b == "event-move":
+                bar, shown = f"±{bm_ret:.1f}% (move)", f"{abs(ret):.1f}% abs"
+            elif b == "absolute":
+                bar, shown = f"{fmt_pct(bm_ret)} (abs)", fmt_pct(ret)
+            else:
+                bar, shown = fmt_pct(bm_ret), fmt_pct(ret)
             out.append(
-                f"| `{e['id']}` | {e['claim'][:52]}… | {e['prob']:.2f} | {fmt_pct(ret)} | "
+                f"| `{e['id']}` | {e['claim'][:52]}… | {e['prob']:.2f} | {shown} | "
                 f"{bar} | {'yes' if truth else 'no'} | {e['resolve_date']} |"
             )
     out.append("")
+
+    if not_started:
+        out.append("#### Not yet started (event-move entries awaiting their `ref_date`)")
+        out.append("")
+        for e in not_started:
+            out.append(
+                f"- `{e['id']}` (P {e['prob']:.2f}) — reference close is {e['ref_date']}, "
+                f"resolves {e['resolve_date']}"
+            )
+        out.append("")
 
     # --- Held -------------------------------------------------------------
     if held:
@@ -462,12 +559,16 @@ def main() -> None:
     # --- Factual needing source check ------------------------------------
     out.append("#### Needs source check (factual, unresolved)")
     out.append("")
-    if not factual_pending:
+    pending_all = factual_pending + compliance_pending
+    if not pending_all:
         out.append("_None._")
     else:
-        for e in factual_pending:
+        for e in sorted(pending_all, key=lambda x: x["resolve_date"]):
             due = "DUE" if now >= parse_date(e["resolve_date"]) else "not yet due"
-            out.append(f"- `{e['id']}` (P {e['prob']:.2f}, {e['resolve_date']}, {due}) — {e['claim']}")
+            tag = " [compliance]" if e.get("scoring") == "compliance" else ""
+            out.append(
+                f"- `{e['id']}`{tag} (P {e['prob']:.2f}, {e['resolve_date']}, {due}) — {e['claim']}"
+            )
             out.append(f"  - resolve by: {e['resolution']}")
     out.append("")
 

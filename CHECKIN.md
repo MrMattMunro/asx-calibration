@@ -71,13 +71,40 @@ Append to `predictions.json`. This is the step the whole experiment exists for.
 can *only* be populated by factual predictions. Miss this repeatedly and the calibration curve has no
 upper half and the wrap can say nothing.
 
-**Bias hard toward genuinely uncertain claims.** A reporting date already published on the company's
-own investor calendar is a near-free 0.9 — it fills a band but tests almost nothing, and a track built
-from them measures the ability to read a calendar. Prefer claims where **no source states the answer in
-advance**: a pending regulatory decision, a two-sided rate call, a threshold that could plausibly go
-either way. `tavneos-ec-pending-26aug` (P 0.62) is the shape to copy; `nst-reports-29jul` (P 0.95) is
-the shape to ration. A useful test before logging: *could I have looked this up?* If yes, it is a weak
-entry — keep one or two per run for the top band, not five.
+### 🚫 Do NOT register date-of-disclosure claims
+
+**"Company X releases its results on date Y" is not a prediction.** It is a compliance event: ASX Listing
+Rule 4.3A obliges a 30-June-balance-date company to lodge within two months, the company publishes the
+date itself, and the base rate is >97%. Such a claim tests whether you can read a calendar.
+
+Worse, it **corrupts the band it lands in**. Stack near-certainties into the 0.9 band and it reads
+~100% actual against ~0.93 predicted — an apparent "under-confident at the top" finding manufactured
+entirely by question selection. That is a false result, not a weak one.
+
+The nine already in the ledger are tagged `"scoring": "compliance"`, still graded, and **excluded from
+the factual Brier and the calibration table**. Do not add more.
+
+**Test before logging: *could I have simply looked this up?*** If yes, it does not belong in the
+calibration track.
+
+### ✅ What to register instead — content and consequence
+
+The valuable question is not *when* a report lands but **what is in it, and whether it moves the price**:
+
+1. **Content claims** — resolvable from the released report itself. *"NST's first FY27 production
+   guidance midpoint is below X Moz"*, *"CBA declares a FY26 final dividend of at least $Y"*,
+   *"Woolworths FY26 Australian Food EBIT is below FY25"*. Genuinely uncertain, objectively checkable,
+   and they test judgement about a business rather than a calendar.
+2. **Price-reaction claims** — graded mechanically from price, no source check and no self-grading.
+   Use `basis: "event-move"` with a `ref_date` (the session before the event) and a `threshold_pct`:
+   *"CSL's absolute move on FY26 results day exceeds ±2%"*. Direction claims (*"closes higher"*) are
+   honest but pin near 0.50; **magnitude claims are how the upper bands get filled legitimately**,
+   because the probability can be anchored to that stock's measured realised volatility.
+3. **Pending decisions with no published date** — `tavneos-ec-pending-26aug` (P 0.62) is the shape.
+
+**Anchor every probability to something computed, not felt.** For a magnitude claim, measure the stock's
+historical frequency of exceeding the threshold and state it in the `rationale`; shade for the event and
+say by how much. An unanchored number is the over-confidence this experiment exists to detect.
 
 **Per-band n is what governs whether any of this means anything.** Detecting gross miscalibration (a
 claimed 0.90 that is really 0.70) needs ≈21 resolved entries **in that band**; moderate (0.90 vs 0.80)
