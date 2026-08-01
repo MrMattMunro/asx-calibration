@@ -39,11 +39,33 @@ from prices import Quote, Rotator, describe_flags, get_close_on, get_price
 HERE = Path(__file__).resolve().parent
 LEDGER = HERE / "predictions.json"
 
-# Same-cluster predictions are treated as ~70% redundant when computing an
-# effective sample size. This is a deliberately crude honesty adjustment, not a
-# rigorous estimator - the point is that 15 gold miners must not be able to
-# masquerade as 15 independent bets.
-CLUSTER_RHO = 0.7
+# --- Correlation model for effective sample size ------------------------------
+#
+# MEASURED, not assumed (2026-07-31, 508 sessions of ASX daily data to 2026-07-31,
+# 15 names, 105 pairs). What matters is the correlation of the OUTCOME actually
+# being predicted, not of the underlying prices:
+#
+#     raw daily returns .............. rho = +0.084   <- the market factor
+#     daily EXCESS returns vs VAS .... rho = +0.002
+#     39-day beat/not-beat outcome ... rho = -0.020
+#
+# The market factor is real but CANCELS between the two legs of a relative call
+# ("X beats VAS"), because it sits on both sides. So two relative calls on
+# different names over the same window are very nearly independent bets, and the
+# old model - which discounted them 70% for sharing a sector tag - was wrong.
+#
+# The correlation that IS real, and that the old model missed entirely:
+#   1. SAME TICKER across two entries. Nearly the same bet, and it slipped
+#      through whenever the two carried different cluster tags (e.g. the two live
+#      CSL entries, which shared no tag and so were counted in full).
+#   2. WINDOW OVERLAP. Two calls on one ticker over disjoint periods are far more
+#      independent than two over identical periods.
+#
+# Same-cluster is kept as a modest residual allowance for theme/method
+# correlation the cross-sectional measurement cannot see (e.g. reporting-date
+# entries share a failure mode, not a market factor).
+SAME_TICKER_RHO = 0.85
+SAME_CLUSTER_RHO = 0.40
 
 SMALL_N = 20
 BANDS = [(0.5, 0.6), (0.6, 0.7), (0.7, 0.8), (0.8, 0.9), (0.9, 1.0001)]
@@ -64,24 +86,94 @@ def brier(items: list[tuple[float, int]]) -> float | None:
     return sum((p - o) ** 2 for p, o in items) / len(items)
 
 
-def effective_n(entries: list[dict]) -> float:
-    """Raw n discounted for correlation within clusters.
+def _window(e: dict) -> tuple[date, date] | None:
+    """The measurement window [logged, resolve_date], if both are present."""
+    try:
+        return parse_date(e["logged"]), parse_date(e["resolve_date"])
+    except Exception:
+        return None
 
-    A cluster of k predictions counts as roughly 1 + (k-1)*(1-rho) independent
-    bets. Untagged entries and anything tagged 'independent' count in full.
+
+def _overlap_fraction(a: dict, b: dict) -> float:
+    """Fraction of the SHORTER window that the two entries share, in [0, 1].
+
+    Returns 1.0 when either window is unknown - the conservative default, since
+    assuming no overlap would inflate effective n.
     """
-    by_cluster: dict[str, int] = {}
-    loose = 0
-    for e in entries:
-        c = e.get("cluster")
-        if not c or c == "independent":
-            loose += 1
-        else:
-            by_cluster[c] = by_cluster.get(c, 0) + 1
-    eff = float(loose)
-    for k in by_cluster.values():
-        eff += 1 + (k - 1) * (1 - CLUSTER_RHO)
-    return eff
+    wa, wb = _window(a), _window(b)
+    if not wa or not wb:
+        return 1.0
+    lo = max(wa[0], wb[0])
+    hi = min(wa[1], wb[1])
+    shared = (hi - lo).days
+    if shared <= 0:
+        return 0.0
+    shortest = min((wa[1] - wa[0]).days, (wb[1] - wb[0]).days)
+    if shortest <= 0:
+        return 1.0
+    return min(1.0, shared / shortest)
+
+
+def pair_rho(a: dict, b: dict) -> float:
+    """Estimated correlation between two predictions' outcomes.
+
+    The driver differs by track, because the two tracks fail differently:
+
+      - DIRECTIONAL: the ticker dominates. Two price calls on one name over
+        overlapping windows are close to the same bet. Two price calls on
+        DIFFERENT names are very nearly independent once the benchmark leg
+        cancels the market factor (measured rho = -0.020), so they get only the
+        modest residual cluster allowance.
+      - FACTUAL: the ticker is close to irrelevant and the METHOD is what
+        correlates. "Does NST report on the 29th" and "does NST beat VAS" share
+        a subject but almost no information; whereas two reporting-date claims on
+        unrelated companies share a real failure mode - published calendars being
+        less reliable than assumed. So factual pairs correlate by cluster.
+      - CROSS-TRACK on the same subject: correlated only through shared
+        company-specific information. This one is a judgement call, NOT measured;
+        it is set to the cluster rho as a deliberately conservative middle.
+    """
+    if a is b:
+        return 1.0
+    ta, tb = a.get("type"), b.get("type")
+    same_ticker = bool(a.get("ticker")) and a.get("ticker") == b.get("ticker")
+    ca, cb = a.get("cluster"), b.get("cluster")
+    same_cluster = bool(ca) and ca == cb and ca != "independent"
+
+    if ta == "factual" and tb == "factual":
+        # Point-in-time events: no windows to overlap, method is the driver.
+        return SAME_CLUSTER_RHO if same_cluster else 0.0
+
+    if ta != tb:
+        return SAME_CLUSTER_RHO if same_ticker else 0.0
+
+    # Both directional.
+    if same_ticker:
+        base = SAME_TICKER_RHO
+    elif same_cluster:
+        base = SAME_CLUSTER_RHO
+    else:
+        return 0.0
+    return base * _overlap_fraction(a, b)
+
+
+def effective_n(entries: list[dict]) -> float:
+    """Effective sample size under the estimated correlation structure.
+
+    Uses the standard n_eff = n^2 / sum_ij(rho_ij), which reduces to the familiar
+    n / (1 + (n-1)*rho) when every pair shares one correlation. Reported instead
+    of raw n so that near-duplicate bets cannot masquerade as independent sample.
+    """
+    n = len(entries)
+    if n == 0:
+        return 0.0
+    total = 0.0
+    for i, a in enumerate(entries):
+        for j, b in enumerate(entries):
+            total += 1.0 if i == j else pair_rho(a, b)
+    if total <= 0:
+        return float(n)
+    return min(float(n), n * n / total)
 
 
 def claim_is_beat(e: dict) -> bool:
@@ -314,15 +406,34 @@ def main() -> None:
     out.append("")
 
     # --- Small-n caveat ---------------------------------------------------
+    # ALWAYS printed. This caveat used to appear only while effective n was below
+    # SMALL_N, which meant the warning protecting every reading of these numbers
+    # would switch itself off exactly as the sample grew - and crossing ~20 does
+    # NOT make a calibration curve readable. It only stops it being hopeless.
+    # Per-band n is what governs whether a band means anything, so that is now
+    # reported alongside, and the caveat is unconditional.
     eff_all = effective_n(final_dir_entries + factual_entries)
+    band_ns = [len([1 for p, _ in all_scored if lo <= p < hi]) for lo, hi in BANDS]
+    biggest = max(band_ns) if band_ns else 0
     if eff_all < SMALL_N:
         out.append(
             f"> ⚠️ **Small sample.** Effective n ≈ {eff_all:.1f} (raw {len(all_scored)}), "
-            f"below the ~{SMALL_N} needed to say anything firm. These numbers *illustrate* "
-            f"calibration; they do not establish skill. \"n too small to conclude\" is a "
-            f"valid, pre-committed result."
+            f"below the ~{SMALL_N} floor. These numbers *illustrate* calibration; they do not "
+            f"establish skill. \"n too small to conclude\" is a valid, pre-committed result."
         )
-        out.append("")
+    else:
+        out.append(
+            f"> ⚠️ **Sample caveat (always shown).** Effective n ≈ {eff_all:.1f} "
+            f"(raw {len(all_scored)}) is past the ~{SMALL_N} floor, but that floor only marks "
+            f"where the numbers stop being hopeless — it is not a licence to draw conclusions."
+        )
+    out.append(
+        f"> **Per-band n is the binding constraint, and the largest band holds {biggest}.** "
+        f"Detecting *gross* miscalibration (a claimed 0.90 that is really 0.70) needs ≈21 in "
+        f"that band; moderate (0.90 vs 0.80) needs ≈62; subtle (0.60 vs 0.50) needs ≈97. "
+        f"Read any band below those thresholds as decorative."
+    )
+    out.append("")
 
     # --- Provisional standings -------------------------------------------
     out.append("#### Provisional standings — NOT FINAL (live directional predictions)")

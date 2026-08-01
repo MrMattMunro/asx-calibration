@@ -91,6 +91,80 @@ should be highest:**
 is close to unsatisfiable affirmatively. Future factual rules should specify an achievable evidentiary
 standard — e.g. "no closure announcement on the official record as at DATE."
 
+## Measured: how much independent information the ledger actually holds
+
+*Added 2026-08-01. This began as a suspicion that the design was near-worthless, and the measurement
+refuted it. Recorded in full because the refutation is the useful part.*
+
+**The suspicion.** 13 of 16 directional entries resolve on a single day (2026-08-26), 12 of them share
+an identical start date, an identical end date and the same benchmark. That looks like one market-window
+bet sliced twelve ways, which would mean the honest effective n was ~2 and the wrap could say nothing.
+
+**The measurement.** 508 sessions of daily ASX data to 2026-07-31, 15 names, 105 pairs:
+
+| Correlation of… | ρ̄ |
+| --- | --- |
+| Raw daily returns | **+0.084** ← the market factor |
+| Daily **excess** returns vs VAS | **+0.002** |
+| The **actual outcome** (39-day beat / not-beat) | **−0.020** |
+
+**The suspicion was wrong, and wrong in the direction that flattered it.** The market factor is real, but
+a relative claim — "X beats VAS" — carries the benchmark on *both* sides, so the common factor cancels
+and what remains is idiosyncratic. Twelve relative calls on different names over one shared window are
+worth very nearly twelve independent bets, not two.
+
+**What IS correlated, and was being missed entirely.** The old estimator discounted by *sector tag* at
+ρ=0.7 — a guess, and one the data says is far too aggressive for relative calls. Meanwhile it gave a
+**zero** discount to the genuinely near-duplicate pairs, because they happened to carry different tags:
+
+| Pair | Old ρ | Measured/modelled ρ |
+| --- | --- | --- |
+| Two VAS index calls, identical window | 0.7 (same `market-beta` tag) | **0.85** |
+| The two live CSL price calls | **0.0** — different tags | **0.68** |
+| The two live DRO price calls | 0.7 | **0.74** |
+| CBA vs WDS — different names, different sectors | 0.0 | **0.00** ✓ |
+| An NST price call vs an NST reporting-date fact | 0.0 | **0.40** |
+
+So the estimator was simultaneously too harsh on the thing that was fine and blind to the thing that
+wasn't. Replaced (see change log) with a model keyed on **same ticker × window overlap**, differentiated
+by track. Net effect on the live ledger: raw 34 → effective **21.1**.
+
+### How much sample would actually be needed — and does a longer run help?
+
+Power, computed rather than asserted:
+
+| To detect | Needed **in that band** |
+| --- | --- |
+| Gross miscalibration (claims 0.90, truly 0.70) | ≈ **21** |
+| Moderate (0.90 vs 0.80) | ≈ **62** |
+| Subtle (0.60 vs 0.50) | ≈ **97** |
+
+And on the directional Brier, the 95% CI around 0.25 is **[0.10, 0.40] at n=16** — worthless — narrowing
+to [0.196, 0.304] at n=120 and only [0.224, 0.276] at n=500. **The directional track can therefore never
+demonstrate an edge at any realistic sample size. It can only ever rule out a large one** — which it has
+already provisionally done, and which was the pre-committed expectation anyway.
+
+**Does extending the run help? Yes — materially, and more than first thought**, precisely because the
+correlation measurement shows sample accumulates almost independently. Each additional relative call is
+worth close to a full observation, not a fraction of one. At ~9 new predictions per weekly check-in from
+a base of 28:
+
+| Wrap moved to | Approx. raw n |
+| --- | --- |
+| 2026-08-26 (current) | 28 |
+| late Sep | ~64 |
+| **late Oct** | **~100** |
+| late Nov | ~145 |
+
+**The binding constraint is not total n — it is per-band n, and specifically the FACTUAL predictions.**
+Directional stock calls can only honestly sit at 0.50–0.60, so they all pile into the bottom band; the
+0.7/0.8/0.9 bands can only ever be filled by factual entries, which arrive at ~5 per check-in spread over
+several bands. Reaching ≈21 in each of the three upper bands takes roughly **13 more weeks**.
+
+**Conclusion: ~late October buys a readable aggregate; ~late November buys a readable calibration curve
+at the gross-miscalibration level. Nothing buys the subtle level.** Extending past November is not worth
+the effort it costs.
+
 ## Precursor / event-study track
 
 Seeded, grading continues past the wrap by design (most precursor rules resolve in September).
@@ -171,4 +245,6 @@ made at this wrap**, whatever the numbers look like — see the README section o
 | 2026-07-31 | **Grading now uses the close ON `resolve_date`, not the price on the day the check-in is run.** Added `prices.get_close_on()` (last session on or before `resolve_date`); `--resolve` additionally writes a `graded_on` block recording the session used, the subject return and the bar. | **This was a silent rule violation, not a rounding error.** `prices.py` had no historical lookup at all, so a check-in run late measured a longer window than the rule pre-registered. NST's rule specifies `[2026-07-18, 2026-07-29]`; grading it on 31 Jul prices measured 13 days, not 11. **Verified outcome-neutral before adoption** — both entries due today grade identically old and new (NST 0, VAS 1), so this cannot be a grader retro-fitted to flatter the score, and that verification is *why* it was done today rather than later. The exposure is concentrated: **14 of 15 live directional entries resolve on 2026-08-26, which is the wrap date itself** — running the wrap one day late would have mis-windowed every one of them. |
 | 2026-07-31 | **Guard added for probabilities below 0.5.** The calibration bands start at 0.5, so a P < 0.5 entry would count in the Brier score but appear in no band. `score.py` now prints a loud warning naming any such entry. Convention restated: phrase claims so P ≥ 0.5, stating the complement where needed. | Found while drafting a genuinely-uncertain entry that naturally wanted P ≈ 0.4. Nothing had breached it yet, so this is a fix made *before* the failure rather than after — the cheap case. Also drove the wording of `tavneos-ec-pending-26aug`, phrased as a positive read of a published status field rather than an argument from absence, which is the flaw already logged against the `dro-asic-live` rule. |
 | 2026-07-31 | **Precursor cluster tagged by correlation, not by rule, for one entry.** `dro-governance-overhang…` is tagged `cluster: "defence"` rather than `"governance"`. | It is nearly the same bet as the live `dro-underperform` call — same stock, same direction, overlapping window — and that same-stock correlation is far stronger than its link to the other cohort member (WTC) through the rule. Tagging `defence` makes `score.py` discount it against the existing DRO entries, **lowering** effective n. The conservative choice, taken at the cost of the tag-by-rule convention, and recorded here because it is a deviation. **Related observation, uncorrectable:** the six existing reporting-date factual entries are all tagged `cluster: "independent"`, which counts them at full weight. They are independent *events*, but the *errors* are highly correlated — same question type, same evidence source, same failure mode if published calendars turn out unreliable. Those tags are pre-registered and stand; new reporting-date entries share `cluster: "reporting-dates"` instead. Effective n on the factual track is therefore **overstated** for the earlier entries. |
+| 2026-08-01 | **`effective_n` rewritten: correlation is now MEASURED, and keyed on ticker × window overlap rather than on sector tag.** Old model: same-cluster ⇒ ρ=0.7, everything else ⇒ 0. New model: `n_eff = n²/Σρᵢⱼ`, with same-ticker ⇒ 0.85 and same-cluster ⇒ 0.40, both scaled by the fraction of the shorter measurement window the pair shares; differentiated by track (factual pairs correlate by method, not ticker; cross-track same-subject pairs get the cluster rho as an unmeasured conservative middle). | The old ρ=0.7 was an admitted guess and the data contradicts it: measured correlation of the *outcome being predicted* across names is **−0.020**, because the benchmark leg cancels the market factor in a relative claim. So the old model over-penalised the cross-sectional book while giving a **zero** discount to genuinely near-duplicate pairs that happened to carry different tags — the two live CSL price calls were being counted as fully independent. Net effect on the live ledger: raw 34 → effective 21.1. **This began as my own claim that the design was near-worthless; the measurement refuted it, and the refutation is recorded above rather than quietly dropped.** ⚠️ Note this is a scoring-method change made mid-experiment; it alters no `prob`, no `outcome` and no pre-registered field, only the *reported* effective n. |
+| 2026-08-01 | **The small-sample caveat is now unconditional, and per-band n is reported alongside it.** | It previously printed only while effective n was below 20 — meaning the warning that protects every reading of these numbers would **switch itself off exactly as the sample grew**, and the live ledger is now at 21.1. Crossing ~20 does not make a calibration curve readable; it only stops it being hopeless. The per-band thresholds (≈21 gross / ≈62 moderate / ≈97 subtle) are now printed every run so a band with n=3 cannot be mistaken for evidence. |
 | 2026-07-31 | **Provenance model changed:** entries logged from this check-in carry `claude-opus-5[1m]`; check-ins 1–2 carry `claude-opus-4-8[1m]`. | Recorded because the provenance table now spans two models mid-experiment. This changes nothing about the standing pre-commitment: **no model-comparison claim will be made at the wrap.** Per-cell n is in the low single digits, the split is confounded with time and with question type, and a flattering cut will always be available. The field exists for description only. |
