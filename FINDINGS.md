@@ -1,7 +1,31 @@
 # Findings
 
-> **Status: open.** The experiment began 2026-07-18 and wraps ~2026-08-26. This file is updated at
-> each check-in and finalised at the wrap. **Null results are reported, not buried.**
+> **Status: open.** The experiment began 2026-07-18 and wraps **2026-11-28** (extended 2026-08-01 from
+> the original 2026-08-26 — see the pre-commitment below). This file is updated at each check-in and
+> finalised at the wrap. **Null results are reported, not buried.**
+
+## Pre-commitment on the extension (written 2026-08-01, before any further result)
+
+The run was extended from 2026-08-26 to **2026-11-28**. **Extending an experiment after seeing early
+results is a questionable research practice** — it is optional stopping run backwards, and it is exactly
+how a null result gets quietly converted into a positive one. So the reasoning is fixed here, in advance:
+
+1. **The trigger was a power calculation, not a result.** At n≈28 no band could reach the ~21 needed to
+   detect even *gross* miscalibration. The extension targets a stated sample size, computed before the
+   extra data exists, and would have been made identically had the early results been flattering.
+2. **The extension cannot help the numbers look better.** The directional Brier currently sits at 0.2858
+   — *worse* than the 0.25 baseline — and the pre-committed expectation is that it converges *to* 0.25.
+   More sample makes the unflattering result firmer, not softer.
+3. **Every pre-committed expectation stands unchanged** — see "The pre-committed expectation" above. None
+   was revised when the run was extended.
+4. **No further extension will be made on the basis of what the numbers say.** 2026-11-28 is the end. If
+   the sample is still too thin then, the wrap reports "n too small to conclude", which remains a valid
+   pre-committed outcome.
+5. **The wrap reports whatever it finds on that date**, including a directional Brier at or above 0.25,
+   including an over-confident factual track, including nulls on all three precursor rules.
+
+Also fixed now, so it cannot be tuned later: from 2026-08-01 each check-in targets **8–10 factual
+predictions**, biased toward genuinely uncertain claims rather than published-calendar reads.
 
 ## The pre-committed expectation
 

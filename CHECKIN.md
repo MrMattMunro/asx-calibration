@@ -66,10 +66,23 @@ Two standing cautions:
 
 Append to `predictions.json`. This is the step the whole experiment exists for.
 
-**Target 3–5 factual/event predictions per check-in, spread across 0.6–0.95.** Directional stock
-calls can only honestly sit near 0.5, so the upper calibration bands can *only* be populated by
-factual predictions. Miss this repeatedly and the calibration curve has no upper half and the wrap
-can say nothing.
+**Target 8–10 factual/event predictions per check-in, spread across 0.6–0.95** *(raised from 3–5 on
+2026-08-01)*. Directional stock calls can only honestly sit near 0.5, so the upper calibration bands
+can *only* be populated by factual predictions. Miss this repeatedly and the calibration curve has no
+upper half and the wrap can say nothing.
+
+**Bias hard toward genuinely uncertain claims.** A reporting date already published on the company's
+own investor calendar is a near-free 0.9 — it fills a band but tests almost nothing, and a track built
+from them measures the ability to read a calendar. Prefer claims where **no source states the answer in
+advance**: a pending regulatory decision, a two-sided rate call, a threshold that could plausibly go
+either way. `tavneos-ec-pending-26aug` (P 0.62) is the shape to copy; `nst-reports-29jul` (P 0.95) is
+the shape to ration. A useful test before logging: *could I have looked this up?* If yes, it is a weak
+entry — keep one or two per run for the top band, not five.
+
+**Per-band n is what governs whether any of this means anything.** Detecting gross miscalibration (a
+claimed 0.90 that is really 0.70) needs ≈21 resolved entries **in that band**; moderate (0.90 vs 0.80)
+needs ≈62; subtle (0.60 vs 0.50) needs ≈97. Spread new entries toward whichever bands are thinnest —
+`score.py` prints the count for each.
 
 - Prefer **short-horizon** predictions that resolve in days — they compound sample far faster than
   hold-to-wrap calls.

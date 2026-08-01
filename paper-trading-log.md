@@ -6,10 +6,19 @@
 
 - **Pretend pot:** $20,000 AUD
 - **Started:** 2026-07-11
-- **Planned review window:** ~6 weeks (target wrap **~2026-08-26**, extended 2026-07-18 from the
-  original ~08-11). **Why extended:** the catalysts that actually grade these picks — the August
-  FY-reporting wall (CSL 18 Aug, BHP 17 Aug, QBE 14 Aug, Vicinity/SRG/NST 20 Aug, DRO ~26 Aug) —
-  land *after* the original wrap. Ending 11 Aug would cut off right before the evidence arrives.
+- **Planned review window:** target wrap **2026-11-28**, extended 2026-08-01 from ~2026-08-26 (itself
+  extended 2026-07-18 from the original ~08-11).
+  - **Why extended the first time:** the catalysts that actually grade these picks — the August
+    FY-reporting wall (CSL 18 Aug, BHP 17 Aug, QBE 14 Aug, Vicinity/SRG/NST 20 Aug, DRO ~26 Aug) —
+    land *after* the original wrap. Ending 11 Aug would cut off right before the evidence arrives.
+  - **Why extended again (2026-08-01):** a power calculation, not a result. At n≈28 no probability band
+    could reach the ≈21 resolved entries needed to detect even *gross* miscalibration, so the wrap could
+    only ever have said "n too small". ~2026-11-28 puts the three upper bands within reach.
+    ⚠️ **Extending after seeing early results is a questionable research practice**, so the reasoning and
+    the pre-commitments are fixed in `FINDINGS.md` under "Pre-commitment on the extension" — including
+    that **no further extension will be made on the basis of what the numbers say**. Note the extension
+    cannot flatter the record: the directional Brier is currently 0.2858, *worse* than baseline, and more
+    sample is expected to make that firmer rather than softer.
 - **Check-in cadence:** every few days / each weekend — flexible, we're watching engagement
 - **Benchmark:** $20,000 hypothetically all-in on VAS (Vanguard ASX300 ETF) on day one.
   The whole point — did the picks beat just buying the whole market?
@@ -216,9 +225,13 @@ be read as honesty rather than fence-sitting.
 
 ### Cadence to the wrap
 
-- Each check-in, add **3–5 factual/event predictions** across the 0.6–0.95 range. Directional stock
-  calls can only honestly sit near 0.5, so the upper calibration bands can *only* be populated by
-  factual predictions — that's where calibration is actually testable, and it's cheap to generate.
+- Each check-in, add **8–10 factual/event predictions** across the 0.6–0.95 range *(raised from 3–5 on
+  2026-08-01)*. Directional stock calls can only honestly sit near 0.5, so the upper calibration bands
+  can *only* be populated by factual predictions — that's where calibration is actually testable.
+- **Bias toward genuinely uncertain claims, not published-calendar reads.** A reporting date already on
+  the company's investor calendar is a near-free 0.9: it fills a band but tests almost nothing. The test
+  before logging is *could I have looked this up?* — if yes, ration it. Keep one or two per run for the
+  top band rather than five. See the FINDINGS note on the factual track being too easy.
 - Prefer **short-horizon** predictions that resolve in days; they compound sample faster.
 - Only add directional calls genuinely independent of live ones; otherwise share the `cluster` tag.
 
