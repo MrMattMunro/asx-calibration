@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -66,6 +67,21 @@ LEDGER = HERE / "predictions.json"
 # entries share a failure mode, not a market factor).
 SAME_TICKER_RHO = 0.85
 SAME_CLUSTER_RHO = 0.40
+
+# Two NON-overlapping windows on the same ticker are not fully independent:
+# volatility clusters, so a turbulent stretch takes down several in a row.
+# MEASURED on 872 non-overlapping ~5-day VAS windows (2026-08-02): serial
+# correlation of the outcome is +0.030 / +0.085 / +0.076 at the -1.0% / -1.5% /
+# -2.5% thresholds. Small, but not zero, and a long sequence of same-ticker
+# windows would otherwise be counted as fully independent sample.
+#
+# It DECAYS WITH DISTANCE: the measurement above is between ADJACENT windows.
+# Two windows three months apart share no regime, so applying the flat figure to
+# every pair would over-penalise badly (it cut 14 chained windows to an effective
+# 7.9 instead of ~12.6). Decayed with a 20-day time constant, adjacent windows
+# keep the measured 0.06 and distant ones fall to ~0.
+SAME_TICKER_SERIAL_RHO = 0.06
+SERIAL_DECAY_DAYS = 20.0
 
 SMALL_N = 20
 BANDS = [(0.5, 0.6), (0.6, 0.7), (0.7, 0.8), (0.8, 0.9), (0.9, 1.0001)]
@@ -122,6 +138,19 @@ def _overlap_fraction(a: dict, b: dict) -> float:
     return min(1.0, shared / shortest)
 
 
+def _time_decay(a: dict, b: dict) -> float:
+    """Exponential decay in [0, 1] on the GAP between two disjoint windows.
+
+    1.0 when they touch, falling toward 0 as they separate. Regime/volatility
+    correlation is local; two windows a quarter apart share nothing.
+    """
+    wa, wb = _window(a), _window(b)
+    if not wa or not wb:
+        return 1.0
+    gap = max(0, (max(wa[0], wb[0]) - min(wa[1], wb[1])).days)
+    return math.exp(-gap / SERIAL_DECAY_DAYS)
+
+
 def pair_rho(a: dict, b: dict) -> float:
     """Estimated correlation between two predictions' outcomes.
 
@@ -157,12 +186,17 @@ def pair_rho(a: dict, b: dict) -> float:
 
     # Both directional.
     if same_ticker:
-        base = SAME_TICKER_RHO
-    elif same_cluster:
-        base = SAME_CLUSTER_RHO
-    else:
-        return 0.0
-    return base * _overlap_fraction(a, b)
+        # Floored, not zeroed, when the windows do not overlap - see
+        # SAME_TICKER_SERIAL_RHO. Volatility clustering means a run of disjoint
+        # windows on one ticker still shares regime risk, decaying with the gap
+        # between them.
+        return max(
+            SAME_TICKER_RHO * _overlap_fraction(a, b),
+            SAME_TICKER_SERIAL_RHO * _time_decay(a, b),
+        )
+    if same_cluster:
+        return SAME_CLUSTER_RHO * _overlap_fraction(a, b)
+    return 0.0
 
 
 def effective_n(entries: list[dict]) -> float:
@@ -279,12 +313,28 @@ def main() -> None:
                 held.append((e, f"no close on/before ref_date {e['ref_date']}"))
                 continue
         elif absolute:
-            if e.get("ref_price") in (None, 0) or e.get("threshold_pct") is None:
-                held.append(
-                    (e, "incomplete pre-registration (missing ref_price or threshold_pct)")
-                )
+            if e.get("threshold_pct") is None:
+                held.append((e, "incomplete pre-registration (missing threshold_pct)"))
                 continue
-            ref_px = e["ref_price"]
+            # An absolute entry may also defer its reference to a future session,
+            # which is what makes a SEQUENCE of back-to-back non-overlapping
+            # windows possible: window N+1 starts where window N ended, so each
+            # is a fresh, near-independent observation rather than another
+            # overlapping slice of the same stretch of market.
+            if e.get("ref_date"):
+                rdate = parse_date(e["ref_date"])
+                if now <= rdate:
+                    not_started.append(e)
+                    continue
+                ref_px, _ = get_close_on(e["ticker"], rdate)
+                if ref_px is None:
+                    held.append((e, f"no close on/before ref_date {e['ref_date']}"))
+                    continue
+            elif e.get("ref_price") in (None, 0):
+                held.append((e, "incomplete pre-registration (missing ref_price or ref_date)"))
+                continue
+            else:
+                ref_px = e["ref_price"]
         else:
             if e.get("ref_price") in (None, 0) or e.get("bm_ref") in (None, 0):
                 held.append((e, "incomplete pre-registration (missing ref_price or bm_ref)"))

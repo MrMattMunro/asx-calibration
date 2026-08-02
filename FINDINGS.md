@@ -283,6 +283,64 @@ several bands. Reaching ≈21 in each of the three upper bands takes roughly **1
 at the gross-miscalibration level. Nothing buys the subtle level.** Extending past November is not worth
 the effort it costs.
 
+## Front-loaded registration (2026-08-02) — decoupling the experiment from check-in discipline
+
+**The largest remaining risk was never the code — it was 17 consecutive weekly check-ins.** The sample
+only becomes informative near the end, so stopping at week six would bank all the work and produce
+nothing. Registering predictions only as check-ins happen makes the entire result hostage to that.
+
+**The structural fix: directional entries grade MECHANICALLY.** No source check, no judgement, no human
+step. So they can be registered *now* for events months out and will resolve whether or not anyone shows
+up. Only factual claims need a resolution pass.
+
+**As at 2026-08-02: 54 live predictions, of which 41 (76%) grade with no check-in required**, spanning
+resolve dates from 21 Aug through 27 Nov.
+
+### The chained index-window sequence
+
+Fourteen VAS entries on **disjoint, end-to-start ~5-trading-day windows** running 14 Aug → 27 Nov, each
+asking whether the index return stays better than a threshold. Probabilities are the **measured
+non-overlapping base rate** over 872 disjoint windows since 2009 (SE ~1%):
+
+| Threshold | Measured P | Registered | Band filled | Count |
+| --- | --- | --- | --- | --- |
+| > −1.0% | 76.5% | 0.76 | 0.7–0.8 | 5 |
+| > −1.5% | 83.5% | 0.84 | 0.8–0.9 | 5 |
+| > −2.5% | 91.7% | 0.92 | 0.9–1.0 | 4 |
+
+Registered **at** the base rate, deliberately unshaded — the 2026-07-19 correction established that a
+2–3pp adjustment sits inside the noise band and would be false precision.
+
+**⚠️ The 25 Sep → 1 Oct window is deliberately omitted.** VAS goes ex-distribution on 1 October every
+year (verified from the dividend record: 2024-10-01, 2025-10-01, 2023-10-02), worth ~$1.10 on a ~$111
+price — a ~1% mechanical drop that would bias any window spanning it. This is the trap flagged in the
+2026-07-19 change-log entry, and it is handled with a gap rather than an invented adjustment.
+
+### Serial correlation, measured rather than assumed
+
+Chained windows are disjoint but **not independent** — volatility clusters. Measured on the same 872
+windows, the serial correlation of the *outcome* is **+0.030 / +0.085 / +0.076** at the −1.0 / −1.5 /
+−2.5 thresholds. The practical form is starker: at −2.5%, P(fail) is 8.3% overall but **15.3% given the
+previous window failed**.
+
+This is now encoded as a correlation floor that **decays with the gap** between windows (20-day time
+constant). The decay matters: applying the flat figure to all 91 pairs cut the sequence to an effective
+7.9, which is far too harsh for windows a quarter apart. Decayed, adjacent windows keep the measured
+0.060 and windows 3.5 months apart fall to 0.0006, giving **effective n 10.9 from 14 raw** — close to the
+AR(1) expectation of ~12.4 and slightly conservative.
+
+### Rate decisions
+
+Four policy-rate calls (RBA 29 Sep / 3 Nov, FOMC 16 Sep / 28 Oct — dates confirmed from primary sources,
+the RBA via text proxy cross-checked against two independent RBA pages). **Deliberately priced modestly
+at 0.58–0.68**, not the ~0.85–0.90 a settled-policy period would justify: the RBA is mid-tightening with
+trimmed-mean CPI still above band, the July FOMC carried three dissents preferring a *hike*, and these
+sit two-to-three meetings out. Given the over-confidence finding above, an unanchored high number here
+would have been the same error repeated.
+
+*(Note: there is no November FOMC meeting in 2026 — the Fed holds only 8, so 28 Oct is the last US
+decision before the wrap.)*
+
 ## Precursor / event-study track
 
 Seeded, grading continues past the wrap by design (most precursor rules resolve in September).
@@ -364,6 +422,8 @@ made at this wrap**, whatever the numbers look like — see the README section o
 | 2026-07-31 | **Guard added for probabilities below 0.5.** The calibration bands start at 0.5, so a P < 0.5 entry would count in the Brier score but appear in no band. `score.py` now prints a loud warning naming any such entry. Convention restated: phrase claims so P ≥ 0.5, stating the complement where needed. | Found while drafting a genuinely-uncertain entry that naturally wanted P ≈ 0.4. Nothing had breached it yet, so this is a fix made *before* the failure rather than after — the cheap case. Also drove the wording of `tavneos-ec-pending-26aug`, phrased as a positive read of a published status field rather than an argument from absence, which is the flaw already logged against the `dro-asic-live` rule. |
 | 2026-07-31 | **Precursor cluster tagged by correlation, not by rule, for one entry.** `dro-governance-overhang…` is tagged `cluster: "defence"` rather than `"governance"`. | It is nearly the same bet as the live `dro-underperform` call — same stock, same direction, overlapping window — and that same-stock correlation is far stronger than its link to the other cohort member (WTC) through the rule. Tagging `defence` makes `score.py` discount it against the existing DRO entries, **lowering** effective n. The conservative choice, taken at the cost of the tag-by-rule convention, and recorded here because it is a deviation. **Related observation, uncorrectable:** the six existing reporting-date factual entries are all tagged `cluster: "independent"`, which counts them at full weight. They are independent *events*, but the *errors* are highly correlated — same question type, same evidence source, same failure mode if published calendars turn out unreliable. Those tags are pre-registered and stand; new reporting-date entries share `cluster: "reporting-dates"` instead. Effective n on the factual track is therefore **overstated** for the earlier entries. |
 | 2026-08-01 | **`effective_n` rewritten: correlation is now MEASURED, and keyed on ticker × window overlap rather than on sector tag.** Old model: same-cluster ⇒ ρ=0.7, everything else ⇒ 0. New model: `n_eff = n²/Σρᵢⱼ`, with same-ticker ⇒ 0.85 and same-cluster ⇒ 0.40, both scaled by the fraction of the shorter measurement window the pair shares; differentiated by track (factual pairs correlate by method, not ticker; cross-track same-subject pairs get the cluster rho as an unmeasured conservative middle). | The old ρ=0.7 was an admitted guess and the data contradicts it: measured correlation of the *outcome being predicted* across names is **−0.020**, because the benchmark leg cancels the market factor in a relative claim. So the old model over-penalised the cross-sectional book while giving a **zero** discount to genuinely near-duplicate pairs that happened to carry different tags — the two live CSL price calls were being counted as fully independent. Net effect on the live ledger: raw 34 → effective 21.1. **Prompted by a concern that the shared-window structure had collapsed effective n to ~2; the measurement did not support that, and the estimator was rewritten anyway because the check exposed the same-ticker blind spot.** ⚠️ Note this is a scoring-method change made mid-experiment; it alters no `prob`, no `outcome` and no pre-registered field, only the *reported* effective n. |
+| 2026-08-02 | **Front-loaded registration: 18 entries covering Aug–Nov, and `ref_date` support extended to absolute-basis entries** so a SEQUENCE of disjoint end-to-start windows can be registered in advance. | The biggest remaining risk to this experiment was never the code — it was depending on 17 consecutive weekly check-ins for a sample that only becomes informative near the end. Directional entries grade mechanically, so they can be registered now and resolve unattended: **41 of 54 live predictions (76%) now need no check-in at all.** This converts the failure mode from "the run lapses and nothing is learned" into "the run lapses and the mechanical tracks still grade". |
+| 2026-08-02 | **Serial-correlation floor added for same-ticker disjoint windows, decaying with the gap** (measured 0.06 adjacent, 20-day time constant). | Chained windows are disjoint but volatility clusters, so they are not fully independent — measured serial rho of the outcome is +0.030/+0.085/+0.076 across the three thresholds, and P(fail) roughly doubles given the previous window failed. Without a floor, `score.py` would have counted 14 chained windows as 14 independent observations. **The decay was necessary, not decorative:** a flat floor across all 91 pairs collapsed the sequence to an effective 7.9, over-penalising windows a quarter apart that share no regime. Decayed, it gives 10.9 from 14 raw. |
 | 2026-08-02 | **Results-day anchoring method corrected: identify the event day by VOLUME, never by largest move.** `CHECKIN.md` updated; the eight live entries priced with the old method are left uncorrected with a pre-registered over-confidence expectation recorded above. | The original anchor identified the results day as the largest-move day in each window and then measured that move — **selection on the outcome variable, biased upward by construction.** Re-measured with volume identifying the day (independent of move size), the old anchor overstates by **+1.61pp** on average, leaving 6 of 8 live entries over-confident by >0.10 (mean gap +0.26). Caught before any of them resolved. The probabilities stand — append-only — so the expectation was pre-registered instead, which turns the batch into a falsifiable test of the system's own miscalibration rather than a spoiled sample. |
 | 2026-08-01 | **Date-of-disclosure claims retired from calibration.** The 9 "company X reports on date Y" entries are tagged `"scoring": "compliance"`, still graded but excluded from the factual Brier and the calibration table; `CHECKIN.md` forbids new ones. Replaced by `basis: "event-move"` entries — results-day price-reaction claims graded mechanically against a `ref_date` close. | **These were never predictions.** ASX LR 4.3A obliges lodgement within two months of a 30-June balance date and the company publishes the date itself, so the base rate is >97%; the claim tested calendar-reading. Worse, stacked into the 0.9 band they would have manufactured a false "under-confident at the top" result out of question selection alone — 69% of the factual track was this. **The reclassification is self-penalising and that is the check that it is honest:** both resolved compliance entries were TRUE at P 0.95/0.93, so removing them moved the factual Brier from 0.0404 to **0.0772** and cut the 0.9 band from n=3 to n=1. Rule applied uniformly, without reference to outcome. *(Raised by Matt, who pointed out that a company meeting a legally-mandated deadline it announced itself is "things going as expected", not a forecast — and that the valuable question is what is IN the report and whether it moves the price.)* |
 | 2026-08-01 | **New schema: `basis: "event-move"` with `ref_date`.** The reference price is the close on a pre-registered future date rather than one stamped at logging; outcome is `abs(return) > threshold_pct` from that close to the `resolve_date` close. `_window()` uses `[ref_date, resolve_date]` for these. | Measuring a *reaction* requires a reference from the session before the event, which only became possible once `get_close_on()` existed. Still tamper-proof: the date is fixed in advance and the close is a public mechanical number, so nothing is selected after the fact. The `_window` change matters for correlation — using `logged` would have made eight different companies' results days look like one overlapping blob and collapsed them to ~1 effective observation; with ref_date windows, same-day pairs correlate at 0.40 and different-day pairs at 0.00, giving effective n 6.67 from 8 raw. Verified on a scratch ledger against known closes: NST moved +2.222% from 28→29 Jul, grading TRUE against a 2% threshold and FALSE against 3%, with a future-dated entry correctly left ungraded. |
