@@ -106,6 +106,15 @@ The valuable question is not *when* a report lands but **what is in it, and whet
 historical frequency of exceeding the threshold and state it in the `rationale`; shade for the event and
 say by how much. An unanchored number is the over-confidence this experiment exists to detect.
 
+🔴 **NEVER identify a past event day by "the biggest move in the window."** That selects on the outcome
+variable and biases the anchor upward — measured at **+1.61pp** on the 2026-08-01 batch, which left 6 of
+its 8 entries over-confident by >0.10 with a mean gap of +0.26. **Identify the event day by VOLUME**
+(results days spike turnover), which is independent of move size, *then* measure the move on that day.
+
+Two further cautions on the volume method: a max-volume day inside a window can also be an index
+rebalance or an ex-dividend date, so state it as a proxy; and where the actual historical results dates
+can be obtained from the company's own archive, use those in preference to any proxy at all.
+
 **Per-band n is what governs whether any of this means anything.** Detecting gross miscalibration (a
 claimed 0.90 that is really 0.70) needs ≈21 resolved entries **in that band**; moderate (0.90 vs 0.80)
 needs ≈62; subtle (0.60 vs 0.50) needs ≈97. Spread new entries toward whichever bands are thinnest —

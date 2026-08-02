@@ -111,6 +111,49 @@ bands — filling the two that were empty, with genuinely uncertain claims rathe
 **Deliberately nothing above 0.9**: the data does not support a near-certain move at any threshold worth
 asking about, and inventing one would repeat the exact mistake being corrected.
 
+### 🔴 PRE-REGISTERED: the results-reaction batch is expected to be OVER-CONFIDENT
+
+*Written 2026-08-02, before any of the eight entries resolve — the first is due 2026-08-07.*
+
+**The anchor used to price that batch was circular.** Results days were identified as *the largest-move
+day* in each reporting window, and then the size of that move was measured. That selects on the outcome
+variable and is biased upward by construction.
+
+Re-measured using **volume** to identify the results day — a proxy that is independent of move size,
+since results days spike turnover — the max-move anchor overstates the typical results-day move by
+**+1.61pp on average** (up to +3.4pp for CSL).
+
+Consequence, stated in advance and per entry:
+
+| | threshold | registered P | volume-identified P | gap |
+| --- | --- | --- | --- | --- |
+| RMD | 2% | 0.85 | 25% | **+0.60** |
+| CSL | 3% | 0.72 | 25% | **+0.47** |
+| CBA | 2% | 0.68 | 25% | **+0.43** |
+| TCL | 2% | 0.58 | 31% | **+0.27** |
+| SUN | 2% | 0.78 | 56% | **+0.22** |
+| FMG | 3% | 0.85 | 69% | **+0.16** |
+| WOW | 2% | 0.66 | 62% | +0.04 |
+| TLS | 2% | 0.65 | 75% | −0.10 |
+
+**6 of 8 are over-confident by more than 0.10; the mean gap is +0.26. If the volume proxy is right this
+batch should resolve TRUE about 46% of the time, against the ~72% its probabilities imply.**
+
+**The probabilities stand uncorrected** — the ledger is append-only, and this is exactly the situation
+that rule exists for. Recording the expectation instead makes the batch a *sharper* test rather than a
+spoiled one: it is now a pre-registered prediction about the system's own miscalibration, and it can fail
+in both directions. If the batch resolves near 46%, the self-diagnosis was right and the mechanism
+(selection on the outcome variable) is confirmed. If it resolves near 72%, the volume proxy was the
+flawed one and the original anchor was sound.
+
+**Caveat, so this is not over-read:** the max-volume day can also be an index rebalance or an ex-dividend
+date rather than the result. It is a proxy too. Its one decisive advantage is being *independent of move
+size*, which the max-move anchor is not.
+
+**Method fixed for future batches** — see the change log. This is the single most useful thing found so
+far, because it is the experiment's own stated purpose (detecting over-confidence) turned on the
+experiment's own output, and it caught a real error.
+
 ### ⚠️ The factual track is currently too easy — the Brier flatters it
 
 The factual Brier of 0.0404 at 100% accuracy should **not** be read as evidence of forecasting skill.
@@ -321,6 +364,7 @@ made at this wrap**, whatever the numbers look like — see the README section o
 | 2026-07-31 | **Guard added for probabilities below 0.5.** The calibration bands start at 0.5, so a P < 0.5 entry would count in the Brier score but appear in no band. `score.py` now prints a loud warning naming any such entry. Convention restated: phrase claims so P ≥ 0.5, stating the complement where needed. | Found while drafting a genuinely-uncertain entry that naturally wanted P ≈ 0.4. Nothing had breached it yet, so this is a fix made *before* the failure rather than after — the cheap case. Also drove the wording of `tavneos-ec-pending-26aug`, phrased as a positive read of a published status field rather than an argument from absence, which is the flaw already logged against the `dro-asic-live` rule. |
 | 2026-07-31 | **Precursor cluster tagged by correlation, not by rule, for one entry.** `dro-governance-overhang…` is tagged `cluster: "defence"` rather than `"governance"`. | It is nearly the same bet as the live `dro-underperform` call — same stock, same direction, overlapping window — and that same-stock correlation is far stronger than its link to the other cohort member (WTC) through the rule. Tagging `defence` makes `score.py` discount it against the existing DRO entries, **lowering** effective n. The conservative choice, taken at the cost of the tag-by-rule convention, and recorded here because it is a deviation. **Related observation, uncorrectable:** the six existing reporting-date factual entries are all tagged `cluster: "independent"`, which counts them at full weight. They are independent *events*, but the *errors* are highly correlated — same question type, same evidence source, same failure mode if published calendars turn out unreliable. Those tags are pre-registered and stand; new reporting-date entries share `cluster: "reporting-dates"` instead. Effective n on the factual track is therefore **overstated** for the earlier entries. |
 | 2026-08-01 | **`effective_n` rewritten: correlation is now MEASURED, and keyed on ticker × window overlap rather than on sector tag.** Old model: same-cluster ⇒ ρ=0.7, everything else ⇒ 0. New model: `n_eff = n²/Σρᵢⱼ`, with same-ticker ⇒ 0.85 and same-cluster ⇒ 0.40, both scaled by the fraction of the shorter measurement window the pair shares; differentiated by track (factual pairs correlate by method, not ticker; cross-track same-subject pairs get the cluster rho as an unmeasured conservative middle). | The old ρ=0.7 was an admitted guess and the data contradicts it: measured correlation of the *outcome being predicted* across names is **−0.020**, because the benchmark leg cancels the market factor in a relative claim. So the old model over-penalised the cross-sectional book while giving a **zero** discount to genuinely near-duplicate pairs that happened to carry different tags — the two live CSL price calls were being counted as fully independent. Net effect on the live ledger: raw 34 → effective 21.1. **Prompted by a concern that the shared-window structure had collapsed effective n to ~2; the measurement did not support that, and the estimator was rewritten anyway because the check exposed the same-ticker blind spot.** ⚠️ Note this is a scoring-method change made mid-experiment; it alters no `prob`, no `outcome` and no pre-registered field, only the *reported* effective n. |
+| 2026-08-02 | **Results-day anchoring method corrected: identify the event day by VOLUME, never by largest move.** `CHECKIN.md` updated; the eight live entries priced with the old method are left uncorrected with a pre-registered over-confidence expectation recorded above. | The original anchor identified the results day as the largest-move day in each window and then measured that move — **selection on the outcome variable, biased upward by construction.** Re-measured with volume identifying the day (independent of move size), the old anchor overstates by **+1.61pp** on average, leaving 6 of 8 live entries over-confident by >0.10 (mean gap +0.26). Caught before any of them resolved. The probabilities stand — append-only — so the expectation was pre-registered instead, which turns the batch into a falsifiable test of the system's own miscalibration rather than a spoiled sample. |
 | 2026-08-01 | **Date-of-disclosure claims retired from calibration.** The 9 "company X reports on date Y" entries are tagged `"scoring": "compliance"`, still graded but excluded from the factual Brier and the calibration table; `CHECKIN.md` forbids new ones. Replaced by `basis: "event-move"` entries — results-day price-reaction claims graded mechanically against a `ref_date` close. | **These were never predictions.** ASX LR 4.3A obliges lodgement within two months of a 30-June balance date and the company publishes the date itself, so the base rate is >97%; the claim tested calendar-reading. Worse, stacked into the 0.9 band they would have manufactured a false "under-confident at the top" result out of question selection alone — 69% of the factual track was this. **The reclassification is self-penalising and that is the check that it is honest:** both resolved compliance entries were TRUE at P 0.95/0.93, so removing them moved the factual Brier from 0.0404 to **0.0772** and cut the 0.9 band from n=3 to n=1. Rule applied uniformly, without reference to outcome. *(Raised by Matt, who pointed out that a company meeting a legally-mandated deadline it announced itself is "things going as expected", not a forecast — and that the valuable question is what is IN the report and whether it moves the price.)* |
 | 2026-08-01 | **New schema: `basis: "event-move"` with `ref_date`.** The reference price is the close on a pre-registered future date rather than one stamped at logging; outcome is `abs(return) > threshold_pct` from that close to the `resolve_date` close. `_window()` uses `[ref_date, resolve_date]` for these. | Measuring a *reaction* requires a reference from the session before the event, which only became possible once `get_close_on()` existed. Still tamper-proof: the date is fixed in advance and the close is a public mechanical number, so nothing is selected after the fact. The `_window` change matters for correlation — using `logged` would have made eight different companies' results days look like one overlapping blob and collapsed them to ~1 effective observation; with ref_date windows, same-day pairs correlate at 0.40 and different-day pairs at 0.00, giving effective n 6.67 from 8 raw. Verified on a scratch ledger against known closes: NST moved +2.222% from 28→29 Jul, grading TRUE against a 2% threshold and FALSE against 3%, with a future-dated entry correctly left ungraded. |
 | 2026-08-01 | **The small-sample caveat is now unconditional, and per-band n is reported alongside it.** | It previously printed only while effective n was below 20 — meaning the warning that protects every reading of these numbers would **switch itself off exactly as the sample grew**, and the live ledger is now at 21.1. Crossing ~20 does not make a calibration curve readable; it only stops it being hopeless. The per-band thresholds (≈21 gross / ≈62 moderate / ≈97 subtle) are now printed every run so a band with n=3 cannot be mistaken for evidence. |
