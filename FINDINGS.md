@@ -329,6 +329,27 @@ constant). The decay matters: applying the flat figure to all 91 pairs cut the s
 0.060 and windows 3.5 months apart fall to 0.0006, giving **effective n 10.9 from 14 raw** — close to the
 AR(1) expectation of ~12.4 and slightly conservative.
 
+### October–November results-reaction entries — first use of the corrected anchor
+
+Six further `event-move` entries on **company-confirmed** results dates: BOQ 15 Oct, NST 21 Oct,
+FMG 22 Oct, WBC 2 Nov, NAB 5 Nov, ANZ 9 Nov. (AGM dates were deliberately excluded — an AGM rarely
+moves a price the way a result does.)
+
+These are the first entries priced with the **corrected** anchoring method: past event days identified
+by **maximum volume** within each reporting window, never by largest move. Two further improvements over
+the August batch:
+
+- **Reporting windows matched to each name's real cycle** rather than a generic Feb/Aug assumption —
+  quarterly for the miners, full-year-plus-half-year for the banks, giving n=16–32 historical event days
+  over 8 years instead of 10.
+- **Shaded down** from the measured figure for small n *and* because a max-volume day can be an index
+  rebalance or ex-dividend date rather than the result.
+
+They span P 0.56–0.88 across four bands. The contrast with the August batch is deliberate and will be
+readable at the wrap: **if the pre-registered over-confidence expectation holds, the August entries
+should underperform their probabilities while these should not.** That is a direct, in-sample test of
+whether the methodological fix actually worked.
+
 ### Rate decisions
 
 Four policy-rate calls (RBA 29 Sep / 3 Nov, FOMC 16 Sep / 28 Oct — dates confirmed from primary sources,
