@@ -119,7 +119,9 @@ Vantage is unreliable for ASX at 25 req/day, and every ASX-capable finance MCP j
 | File | What it is |
 | ---- | ---------- |
 | `predictions.json` | The append-only, pre-registered prediction ledger. The heart of it. |
-| `score.py` | Resolves what it can and prints Brier, calibration table, baselines, effective n. |
+| `predictions_claude.json` | **Second predictor arm** (added 2026-08-08). Claude's probabilities on a mirrored subset of the live event-move claims. A separate file so it can never contaminate the primary Brier or calibration table. |
+| `compare_arms.py` | Paired comparison of the two arms on the shared claims. Run after `score.py --resolve`. |
+| `score.py` | Resolves what it can and prints Brier, calibration table, baselines, effective n. `--ledger <file>` scores an alternate arm. |
 | `prices.py` | Single choke-point for price fetches + plausibility gates. |
 | `quote.py` | Marks the paper book to market; grades the grandfathered binary cohort. |
 | `screen.py` | Multi-factor idea screener; `--precursors` hunts pre-committed precursor patterns. |
@@ -138,6 +140,8 @@ python -m pip install yfinance
 python quote.py       # mark the book to market + grade the grandfathered cohort
 python score.py       # calibration scoring (read-only)
 python score.py --resolve   # write outcomes back for predictions past resolve_date
+python score.py --ledger predictions_claude.json   # score the second predictor arm
+python compare_arms.py      # paired Matt-vs-Claude comparison on the shared claims
 python screen.py --top 15   # idea generation
 python screen.py --precursors   # hunt current precursor matches
 ```

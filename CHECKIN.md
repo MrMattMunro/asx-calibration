@@ -52,6 +52,19 @@ Writes `outcome` and `resolved_on` only for entries past `resolve_date`.
 `bm_ref`, `rationale`, `provenance`). If one contains an error, the error stays and the correction
 goes in `resolution_note`. The append-only rule costs something — that is the point of it.
 
+**Second predictor arm** — after resolving, score it and run the paired comparison:
+
+```bash
+python score.py --ledger predictions_claude.json
+python compare_arms.py
+```
+
+`predictions_claude.json` holds Claude's probabilities on a mirrored subset of the event-move claims
+— identical claim text, resolution rule and dates, so difficulty is held constant and only the
+probability differs. It is a **separate file on purpose**: it must never enter the primary Brier or
+calibration table. The arm resolves off the *primary* ledger's outcomes, so there is nothing extra to
+grade — just run the two commands.
+
 ## 3. Research
 
 A news sweep across the live positions and the calendar ahead. Parallel agents work well: one per
@@ -171,3 +184,12 @@ Written down so they cannot be quietly abandoned when the numbers arrive:
 - **"n too small to conclude" is a valid, pre-committed outcome**, not a failure to be written around.
 - A precursor is only ever called "holds up" on **out-of-sample** matches, never on the cases that
   inspired it.
+- **The Claude arm is frozen at 13 paired entries, registered 2026-08-08.** Its probabilities are a
+  documented mechanical function of measured history, not a judgement, and they are never re-derived
+  once logged — even if the method is later found wanting. A re-derivation after any outcome is known
+  is not a prediction.
+- **The arm cannot be used to justify spending on market data.** 13 pairs is below the primary run's
+  own ~21 threshold for detecting even gross miscalibration. A favourable result means "worth a
+  larger arm next time", never "the estimates are good enough to trade on". The whole reason this
+  arm exists is that "can Claude predict markets" was being settled by argument instead of measurement;
+  settling it by an underpowered measurement is the same error wearing a lab coat.

@@ -39,6 +39,9 @@ from prices import Quote, Rotator, describe_flags, get_close_on, get_price
 
 HERE = Path(__file__).resolve().parent
 LEDGER = HERE / "predictions.json"
+# Second predictor arm. Kept in a SEPARATE file so it can never contaminate the
+# primary ledger's Brier score or calibration table - see its schema_note.
+CLAUDE_LEDGER = HERE / "predictions_claude.json"
 
 # --- Correlation model for effective sample size ------------------------------
 #
@@ -240,15 +243,27 @@ def main() -> None:
         action="store_true",
         help="write outcome/resolved_on back for directional predictions past resolve_date",
     )
+    ap.add_argument(
+        "--ledger",
+        default=None,
+        help=(
+            "path to the ledger to score (default: predictions.json). "
+            "Pass --ledger predictions_claude.json to score the second predictor arm. "
+            "The two are scored separately by design; never merge them."
+        ),
+    )
     args = ap.parse_args()
 
-    data = json.loads(LEDGER.read_text(encoding="utf-8"))
+    ledger_path = Path(args.ledger) if args.ledger else LEDGER
+    if not ledger_path.is_absolute():
+        ledger_path = HERE / ledger_path
+    data = json.loads(ledger_path.read_text(encoding="utf-8"))
     preds = data["predictions"]
     bm_ticker = data.get("benchmark_ticker", "VAS")
     now = today()
 
     out: list[str] = []
-    out.append(f"### {now.isoformat()} — Calibration score (predictions.json)")
+    out.append(f"### {now.isoformat()} — Calibration score ({ledger_path.name})")
     out.append("")
 
     # --- Price fetches (one per distinct ticker, plus the benchmark) -------
@@ -665,7 +680,7 @@ def main() -> None:
     print("\n".join(out))
 
     if args.resolve and resolved_writes:
-        LEDGER.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        ledger_path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"\n[--resolve] wrote outcomes for {resolved_writes} prediction(s).", file=sys.stderr)
     elif args.resolve:
         print("\n[--resolve] nothing was past its resolve_date; ledger unchanged.", file=sys.stderr)
