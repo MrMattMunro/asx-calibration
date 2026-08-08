@@ -42,15 +42,24 @@ Written down on 2026-07-18, before any prediction resolved, so it cannot be rati
 
 ## Results
 
-**Six predictions have resolved.** As at check-in 3 (2026-07-31) the ledger holds **34 predictions** —
-6 resolved, 28 live. The first cluster came due 29–30 July and graded cleanly.
+**Eight predictions have resolved.** As at check-in 4 (2026-08-09) the ledger holds **77 predictions** —
+8 resolved, 69 live. Primary ledger only; the 13-entry Claude arm is scored separately and never enters
+these numbers.
 
 | Track | n | Brier | vs 0.25 baseline | Verdict |
 | ----- | - | ----- | ---------------- | ------- |
-| Directional | 2 | 0.2858 | **does NOT beat it** | no directional skill — **as pre-committed** |
-| Factual | 4 | 0.0404 | n/a | 100% accurate, but see the caveat below |
+| Directional | 3 | 0.1980 | **beats it** | **read as LUCK at n=3** — see below |
+| Factual | 2 | 0.0772 | n/a | 100% accurate, but see the caveat below |
+| Compliance *(excluded from calibration)* | 3 | 0.0037 | n/a | expected; means nothing |
 
 Run `python score.py` for the live numbers.
+
+⚠️ **The directional track flipped from 0.2858 to 0.1980 on a single resolution** (`rmd-results-move-0807`,
+P 0.85, TRUE). It now beats the coin-flip baseline. **The standing pre-commitment applies without
+amendment: at n=3 this is luck, not edge.** The flip is itself the argument — if one observation can move
+the headline number across the baseline in either direction, the headline number is not yet measuring
+anything. Recorded prominently because a pre-commitment is only worth writing down if it is honoured when
+the numbers turn *favourable*, which is the harder direction.
 
 ### The directional track is behaving exactly as predicted
 
@@ -153,6 +162,52 @@ size*, which the max-move anchor is not.
 **Method fixed for future batches** — see the change log. This is the single most useful thing found so
 far, because it is the experiment's own stated purpose (detecting over-confidence) turned on the
 experiment's own output, and it caught a real error.
+
+#### 🔴 FOLLOW-UP 2026-08-09 — the table above does not fully reproduce
+
+*Written at check-in 4, with one of the eight resolved.*
+
+The volume-anchor computation was re-run, this time through a committed script (`anchor.py`) rather than
+by hand. **Six of the eight figures reproduce within ~6pp. Two do not, and they miss in opposite
+directions:**
+
+| | thr | registered P | table above | recomputed | delta |
+| --- | --- | --- | --- | --- | --- |
+| RMD | 2% | 0.85 | 25% | **60%** | **+35pp** |
+| TCL | 2% | 0.58 | 31% | **10%** | **−21pp** |
+| CSL | 3% | 0.72 | 25% | 30% | +5pp |
+| CBA | 2% | 0.68 | 25% | 30% | +5pp |
+| SUN | 2% | 0.78 | 56% | 50% | −6pp |
+| FMG | 3% | 0.85 | 69% | 70% | +1pp |
+| WOW | 2% | 0.66 | 62% | 60% | −2pp |
+| TLS | 2% | 0.65 | 75% | 70% | −5pp |
+
+Recomputation used the same stated method — event day = max-volume session in each Feb/Aug window, n=10
+complete windows over 5 years — matching the original's stated n. Three of the original figures being
+*exactly* 25% is what prompted the check. RMD was additionally tested on the NYSE line in case the
+original had used the wrong listing: that gives 40%, and the ASX line gives 60%. **Neither is 25%, and
+the figure is not recoverable from any reading of the method that could be reconstructed.**
+
+**What survives and what does not:**
+
+- ✅ **The batch-level pre-registration survives essentially intact.** Recomputed mean across the eight is
+  **47.5%** against a registered mean of 72.1%; the figure recorded above was 46% vs ~72%. The two errors
+  very nearly cancel. The falsifiable claim — *this batch should resolve TRUE far below the ~72% its
+  probabilities imply* — is unchanged, and remains the thing to judge at the wrap.
+- ❌ **The per-entry table does not survive**, and neither does the ranking built on it. RMD was named the
+  worst offender at +0.60; on the recomputed anchor it is +0.25, mid-pack. Any wrap-time reading that
+  leans on *which* entries were most over-confident is reading a number that cannot be reproduced.
+- ⚠️ **RMD has since resolved TRUE** (−8.29% against a ±2% bar). That is one observation and settles
+  nothing, but it sits comfortably with a 60% anchor and awkwardly with a 25% one.
+
+**Nothing above was edited.** The append-only rule exists for precisely this case: a pre-registered
+expectation that later looks wrong is evidence, not a mistake to tidy away. The correction is recorded
+beside it.
+
+**The deeper lesson is about method, not arithmetic.** The corrected anchoring method was documented in
+prose and then applied *by hand, per batch*. That is how an unreproducible number entered the record and
+sat there for a week, under a heading announcing a methodological fix. A method that exists only as prose
+is not a method — it is an intention. It is now `anchor.py`.
 
 ### ⚠️ The factual track is currently too easy — the Brier flatters it
 
@@ -400,18 +455,30 @@ Seeded, grading continues past the wrap by design (most precursor rules resolve 
 
 ## Calibration table
 
-As at check-in 3 (2026-07-31). Effective n ≈ 6.0 — far below the ~20 needed to say anything firm.
+As at check-in 4 (2026-08-09). Effective n ≈ 5.0 — far below the ~20 needed to say anything firm.
+*(The count fell from 6.0 because the two remaining compliance entries were reclassified out of the
+table on 2026-08-01, not because anything was un-resolved.)*
 
 | Prob band | Mean predicted | Actual frequency | n |
 |-----------|----------------|------------------|---|
 | 0.5–0.6 | 0.54 | 1.00 | 1 |
 | 0.6–0.7 | 0.61 | 0.50 | 2 |
 | 0.7–0.8 | — | — | 0 |
-| 0.8–0.9 | — | — | 0 |
-| 0.9–1.0 | 0.93 | 1.00 | 3 |
+| 0.8–0.9 | 0.85 | 1.00 | 1 |
+| 0.9–1.0 | 0.90 | 1.00 | 1 |
 
-Every cell is n ≤ 3. **No cell here supports any inference.** The 0.7–0.8 and 0.8–0.9 bands were still
-empty at this check-in and were deliberately targeted by the predictions registered on 2026-07-31.
+Every cell is n ≤ 2. **No cell here supports any inference.** The 0.8–0.9 band opened at check-in 4 with
+the RMD results-move resolution. **The 0.7–0.8 band is still empty** after four check-ins — it now holds
+13 live entries, the first of which (`rba-holds-11aug`, P 0.70) resolves 11 Aug.
+
+**Where the live sample is heading**, by band, across the 63 live calibration-scored entries (compliance
+excluded): 0.5–0.6 → 22, 0.6–0.7 → 11, 0.7–0.8 → 13, 0.8–0.9 → 13, 0.9–1.0 → 4. The 0.5–0.6 band is the
+fattest and the *least* informative per entry, because a near-coin-flip claim discriminates weakly; it is
+fat because relative directional stock calls cannot honestly sit anywhere else. **Even assuming every
+live entry resolves, no band reaches the ≈21 needed to detect even gross miscalibration** — the best case
+is 0.5–0.6 at 23, and that is the band where 21 would buy the least. **The wrap should therefore state
+"n too small to conclude" as its headline calibration result**, which is the pre-committed outcome, not a
+disappointment to be written around.
 
 **Known reporting constraint:** the bands start at 0.5, so a prediction carrying P < 0.5 would count in
 the Brier score but appear in **no** band — vanishing from this table without trace. The house convention
@@ -428,6 +495,11 @@ made at this wrap**, whatever the numbers look like — see the README section o
 
 | Date | Change | Why |
 | ---- | ------ | --- |
+| 2026-08-09 | **`anchor.py` added — the results-day anchoring method is now a script rather than a documented intention.** `python anchor.py TICKER --threshold X --months M,M --years N` reports the unconditional exceedance frequency, the volume-identified event-day frequency, the elevation ratio and the per-window detail. Two substantive improvements over the hand method: returns are computed on **dividend-adjusted** closes, and the **current, part-elapsed calendar month is excluded** as a window. | The 2026-08-02 correction fixed the *method* but left it being applied by hand, per batch. That is exactly how the unreproducible anchor table recorded above got into the record and stayed there for a week under a heading announcing a methodological fix. Adjusted closes remove the ex-dividend contaminant named in the original caveat (index rebalances remain, so the proxy is still impure and figures are still shaded down). Excluding the current month matters because a part-elapsed window holds no results day yet, so its max-volume session is just the busiest ordinary day — including it dragged measured frequencies **down** and would have made new anchors spuriously conservative. |
+| 2026-08-09 | **Recomputation of the 2026-08-01 over-confidence table: 6 of 8 reproduce, RMD and TCL do not** (+35pp and −21pp). Recorded as a follow-up beside the original; **nothing edited**. | Three of the original figures were exactly 25%, which prompted the check. The batch-level pre-registration survives — recomputed mean 47.5% vs the recorded 46%, against a registered mean of 72.1% — because the two errors run in opposite directions and cancel. The per-entry table and the "RMD is the worst offender" ranking do not survive. Logged rather than corrected in place because a pre-registered expectation that later looks wrong is evidence, and editing it would destroy the only thing that makes it a test. |
+| 2026-08-09 | **Event-move entries now require a COMPANY-CONFIRMED results date** — the company's own key-dates page or an ASX-lodged calendar, never an earnings aggregator. Names whose dates could not be primary-confirmed (BHP, DRO, ORG, GMG, MIN, JBH) were dropped from this batch despite usable anchors. | The date sweep found **REA had already reported on 6 Aug**, before the window it was being considered for. An event-move entry keyed to a wrong date does not measure a wrong forecast — it measures an ordinary trading session, and grades FALSE for reasons unrelated to judgement. Separately, a research pass returned "~24 Aug" for FMG's FY26 statutory result from converging secondary sources; Fortescue's own key-dates page says **20 August**, which is what the two live FMG entries already assume. Both live entries are therefore safe, and the secondary sources were simply wrong. |
+| 2026-08-09 | **New `au-macro-data` cluster** for the two ABS entries (July unemployment, July CPI), with their weaker anchors declared inside their own `rationale` fields. | 14 of the ledger's entries are `results-reaction`; adding more inflates raw n while `effective_n` correctly declines to count it. Macro prints are genuinely uncorrelated with company results-day volatility, so they buy real independent sample. The declaration matters as much as the cluster: these two are anchored on a published level plus the series' step size, **not** on a computed distribution of historical monthly changes, which makes them softer than every price-based entry and they should be discounted accordingly at the wrap. |
+| 2026-08-09 | **The 0.9+ band was deliberately left unfed**, despite being the thinnest (n=5). | The best measured anchor available this cycle was 87.5% (14/16, NST and WTC at their chosen thresholds), and house rule is to shade **down** from the measured figure for small n and proxy impurity. Shading down from 87.5% cannot honestly reach 0.90. Filling a thin band by inflating a probability to fit it is question selection driving the calibration curve — the identical error that got the date-of-disclosure claims retired on 2026-08-01. The band stays thin and the wrap says so. |
 | 2026-07-18 | Exercise reframed from "beat the market" to a calibration experiment; probability ledger opened; money P&L demoted to a secondary engagement metric. | The original question was near-unanswerable at this n; calibration is measurable and transfers. |
 | 2026-07-18 | 8 pre-existing binary up/down calls grandfathered — kept, relabelled, excluded from the ledger. | Retro-assigning probabilities after a week of price action would contaminate calibration. |
 | 2026-07-18 | EODHD enabled as an automated second price source after its free tier was confirmed to return real ASX closes. | Reconcile catches feed breakage. It agrees with yfinance to the cent, which is expected for canonical closes and is *not* evidence of independence. |

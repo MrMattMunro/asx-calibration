@@ -544,6 +544,140 @@ not tests performed.** `screen.py` computes `tests += len(rows)` per rule and ha
 19 Jul, so that run's true exposure was also ~246. The earlier figure understated multiple-comparisons
 risk by ~5×.
 
+### 2026-08-09 — Check-in 4 — **the anchor table does not reproduce**
+
+**Housekeeping first: this log skipped two sessions.** The 1–2 Aug front-loading (18 predictions, the
+circular-anchor catch, the run extension to 28 Nov) and the 8 Aug second-predictor arm were written into
+`predictions.json`, `FINDINGS.md` and the commit messages, but **never into this file** — check-in 3 on
+31 Jul is the last entry above. `CHECKIN.md` step 4 says new predictions go in the human record as well
+as the JSON, and that did not happen. Noted here rather than backdated: those entries are dated where
+they actually are, in the ledger.
+
+**Money book (secondary metric):**
+
+| Ticker | Entry | Current | Value | P&L $ | P&L % |
+|--------|-------|---------|-------|-------|-------|
+| BHP | $58.28 | $62.97 | $5,402.37 | $402.37 | +8.0% |
+| CSL | $122.89 | $132.19 | $5,378.39 | $378.39 | +7.6% |
+| QBE | $25.47 | $24.42 | $3,835.10 | $-164.90 | -4.1% |
+| VSL | $4.70 | $5.60 | $4,170.21 | $670.21 | +19.1% |
+| DRO | $2.29 | $2.18 | $2,379.91 | $-120.09 | -4.8% |
+
+- **Book:** $21,165.98 (+5.8%) vs **benchmark** all-VAS $21,026.58 (+5.1%) → picks **ahead by 0.7 pts**,
+  recovered from −2.7 pts at check-in 3. DRO's drag halved as it bounced; BHP and CSL did the work. Two
+  reversals in three weeks on a five-name book is noise and should be read as noise.
+
+**Resolved this check-in — 2 entries:**
+
+| ID | P | Outcome | Basis |
+|----|---|---------|-------|
+| `2026-08-01-rmd-results-move-0807` | 0.85 | **TRUE** | RMD moved −8.29% on results day vs a ±2.0% bar |
+| `2026-07-31-rmd-reports-6aug` [compliance] | 0.94 | **TRUE** | ResMed IR release, 6 Aug 2026 4:05pm EDT |
+
+- **Directional Brier 0.1980 (n=3)** — beats the 0.25 coin-flip baseline. Per the standing
+  pre-commitment this reads as **luck at n=3**, not edge, and the previous check-in's 0.2858 flipping to
+  0.1980 on a single resolution is the clearest possible illustration of why.
+- **Factual Brier 0.0772, accuracy 100% (n=2).** Compliance track 0.0037 (n=3, 6 live).
+- Calibration effective n ≈ 5.0. The 0.7–0.8 band is still **empty**.
+- **SEC EDGAR 403s automated fetches**, so the RMD compliance grade rests on ResMed's own IR release
+  rather than an 8-K cross-check. Recorded in the entry's `resolution_note`. Add EDGAR to the list of
+  primary sources that block us, alongside ato.gov.au and several ASX IR sites.
+
+#### 🔴 The pre-registered over-confidence table does not reproduce
+
+The 2026-08-02 entry in `FINDINGS.md` pre-registered that the eight 1 Aug event-move entries were
+over-confident by a mean of +0.26, per a table of "volume-identified" probabilities. **Recomputing that
+table this check-in, six of the eight land within ~6pp — and two do not:**
+
+| | thr | registered P | FINDINGS said | recomputed | delta |
+| --- | --- | --- | --- | --- | --- |
+| RMD | 2% | 0.85 | 25% | **60%** | **+35pp** |
+| TCL | 2% | 0.58 | 31% | **10%** | **−21pp** |
+| CSL | 3% | 0.72 | 25% | 30% | +5pp |
+| CBA | 2% | 0.68 | 25% | 30% | +5pp |
+| SUN | 2% | 0.78 | 56% | 50% | −6pp |
+| FMG | 3% | 0.85 | 69% | 70% | +1pp |
+| WOW | 2% | 0.66 | 62% | 60% | −2pp |
+| TLS | 2% | 0.65 | 75% | 70% | −5pp |
+
+Three of the original figures were exactly 25%, which is what prompted the re-check. RMD was tested on
+both the ASX and NYSE lines in case the original had used the wrong one — 60% and 40% respectively,
+neither of them 25%. **The 25% is not recoverable from any reading of the method I could construct.**
+
+**What this does and does not overturn:**
+
+- ❌ It does **not** overturn the batch-level pre-registration. The recomputed mean across the eight is
+  **47.5%** against the registered mean of 72.1% — the FINDINGS figure was 46% vs ~72%. The two errors
+  run in opposite directions and very nearly cancel. **The headline expectation stands almost exactly.**
+- ✅ It **does** overturn the per-entry table, and specifically the worst-offender ranking. RMD was
+  listed as the single most over-confident entry at +0.60. On the recomputed anchor it is +0.25, mid-pack.
+- ⚠️ **RMD is also the one that has now resolved — TRUE.** One resolution proves nothing either way, but
+  it is consistent with the recomputed 60% and awkward for the recorded 25%.
+
+Nothing was edited. The ledger is append-only and a pre-registered expectation is exactly what that rule
+protects; the recomputation is recorded alongside it rather than over it.
+
+**`anchor.py` added** so this cannot recur. The corrected volume-anchoring method was being applied
+ad-hoc, by hand, per batch — which is how an unreproducible number entered the record and stayed there.
+It is now a script: `python anchor.py NST --threshold 1.5 --months 2,8 --years 8`. Two improvements over
+the hand method: returns are computed on **dividend-adjusted** closes, so an ex-dividend drop can no
+longer masquerade as a large move (removing one of the two contaminants named in the original caveat);
+and the **current, part-elapsed calendar month is excluded** as a window, since it holds no results day
+yet and its max-volume session is just the busiest ordinary day.
+
+**Pre-registered this check-in — 11 predictions, P 0.60–0.86:**
+
+| ID | P | Type | Resolves |
+|----|---|------|----------|
+| `qbe-results-move-0814` | 0.60 | event-move | 14 Aug |
+| `rba-retains-tightening-bias-11aug` | 0.62 | factual | 12 Aug |
+| `iag-insurance-profit-in-guidance-fy26` | 0.68 | factual | 14 Aug |
+| `col-results-move-0825` | 0.74 | event-move | 25 Aug |
+| `csl-impairment-ge-1bn-fy26` | 0.78 | factual | 19 Aug |
+| `sto-reaffirms-fy26-production-guidance` | 0.78 | factual | 21 Aug |
+| `nst-results-move-0820` | 0.80 | event-move | 20 Aug |
+| `wtc-results-move-0826` | 0.82 | event-move | 26 Aug |
+| `abs-unemployment-jul-ge-4p3` | 0.85 | factual | 21 Aug |
+| `sun-hazard-above-allowance-fy26` | 0.85 | factual | 13 Aug |
+| `abs-cpi-jul-ge-3p4` | 0.86 | factual | 27 Aug |
+
+Design notes:
+
+- **All four event-move dates are COMPANY-CONFIRMED** from the company's own key-dates page, not a
+  calendar aggregator. Made a hard requirement after the date sweep found REA had **already reported on
+  6 Aug** — an event-move entry on REA would have measured an ordinary session and graded FALSE for a
+  reason having nothing to do with the forecast. BHP, DRO, ORG, GMG, MIN and JBH could not be
+  primary-confirmed (several IR sites 403 or time out) and were therefore **not** used, despite good
+  anchors on some of them.
+- **Two ABS entries deliberately sit in a new `au-macro-data` cluster.** 14 ledger entries are already
+  `results-reaction`; piling on more inflates raw n while `effective_n` correctly refuses to count it.
+  Macro prints are genuinely independent of company results-day volatility.
+- **Their anchors are weaker and each entry says so in its own `rationale`.** The ABS claims are reasoned
+  from the published level plus the series' step size, not from a computed distribution of historical
+  monthly changes. The price-based entries are computed; these are argued. Discount them at the wrap.
+- **The 0.9+ band was left alone on purpose.** It is the thinnest band (5 entries) and the temptation was
+  to feed it, but the best measured anchor available this cycle was 87.5% (14/16, NST and WTC), and
+  shading *down* from 87.5% cannot honestly produce a 0.90. Manufacturing one would repeat exactly the
+  question-selection error that got the date-of-disclosure claims retired.
+
+**FMG's results date was checked directly and the ledger is right.** A research pass returned "~24 Aug"
+for the FY26 statutory result from secondary sources, which would have made both live FMG entries measure
+a non-event day. Fortescue's own key-dates page says **"20 August 2026 FY26 Full Year Results"**. The
+secondary source was wrong; the standing rule about not stating snippets as fact earned its keep again.
+
+**Second predictor arm:** 13 pairs, 0 resolved, first pair resolves 12 Aug (SUN, CBA). Worth recording
+that the arm **correctly contains no RMD entry** — RMD resolved on 7 Aug and the arm was registered on
+the 8th, so mirroring it would have been a prediction made after the outcome was knowable.
+
+**Precursor screen:** ran — **246 name×rule tests** across 3 live rules over 82 names (SVW skipped, no
+data). 15-name cohorts emitted for the governance and pre-upgraded-guidance rules, with 10 further
+matches dropped by the operational budget cap. **No new cohort was registered**, because the news leg was
+not confirmed by sweep this session and `CHECKIN.md` only permits registering a *confirmed* cohort. Said
+plainly rather than left as a silent gap: this is a deferred step, not a completed one. The 5 precursor
+entries already live resolve 30 Aug, 14 Sep and 24 Sep and are unaffected.
+
+---
+
 <!-- Template for future entries:
 ### YYYY-MM-DD — Check-in N
 | Ticker | Entry | Current | Value | P&L $ | P&L % |
